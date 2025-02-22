@@ -1,6 +1,5 @@
 import {
   HeadContent,
-  Link,
   Outlet,
   Scripts,
   createRootRoute,
@@ -11,6 +10,7 @@ import { DefaultCatchBoundary } from "../components/default-catch-boundary";
 import { NotFound } from "../components/not-found";
 import appCss from "../styles/app.css?url";
 import { seo } from "../utils/seo";
+import MobileLayout from "~/components/mobile-layout";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -76,28 +76,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <head>
         <HeadContent />
       </head>
-      <body>
-        <div className="p-2 flex gap-2 text-lg">
-          <Link
-            to="/"
-            activeProps={{
-              className: "font-bold",
-            }}
-            activeOptions={{ exact: true }}
-          >
-            Home
-          </Link>
-          <Link
-            to="/notes"
-            activeProps={{
-              className: "font-bold",
-            }}
-          >
-            Notes
-          </Link>
-        </div>
-        <hr />
-        {children}
+      <body suppressHydrationWarning>
+        <MobileLayout>{children}</MobileLayout>
         <TanStackRouterDevtools position="bottom-right" />
         <Scripts />
       </body>
