@@ -6,16 +6,16 @@ export const Route = createFileRoute("/_layout")({
   component: RouteComponent,
 });
 
-function RouteComponent({ children }: { children: React.ReactNode }) {
+function RouteComponent() {
   return (
-    <div className="grid grid-rows-[auto_1fr_auto] h-screen">
-      <header className="bg-primary text-primary-foreground p-4 text-lg font-bold border-b border">
+    <div className="h-screen grid grid-rows-[auto_1fr_3.5rem]">
+      <header className="bg-white text-primary-foreground p-4 text-lg font-bold border-b border">
         <Link to="/">Scribbles</Link>
       </header>
       <main className="overflow-y-auto p-4">
         <Outlet />
       </main>
-      <nav className="bg-background border-t">
+      <nav className="bg-background border-t fixed bottom-0 left-0 right-0 bg-white">
         <ul className="grid grid-cols-4 gap-2 p-2 py-6">
           <li className="flex justify-center">
             <Link to="/">
