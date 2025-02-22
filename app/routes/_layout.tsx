@@ -1,29 +1,20 @@
-import { Link } from "@tanstack/react-router";
-import { LucideHome, LucideNotebook, LucideSettings } from "lucide-react";
-import { useEffect, useState } from "react";
+import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
+import { LucideNotebook, LucideSettings } from "lucide-react";
+import { LucideHome } from "lucide-react";
 
-export default function MobileLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const [isMounted, setIsMounted] = useState(false);
+export const Route = createFileRoute("/_layout")({
+  component: RouteComponent,
+});
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  // During SSR or before hydration, render just the children
-  if (!isMounted) {
-    return children;
-  }
-
+function RouteComponent({ children }: { children: React.ReactNode }) {
   return (
     <div className="grid grid-rows-[auto_1fr_auto] h-screen">
       <header className="bg-primary text-primary-foreground p-4 text-lg font-bold border-b border">
         <Link to="/">Scribbles</Link>
       </header>
-      <main className="overflow-y-auto p-4">{children}</main>
+      <main className="overflow-y-auto p-4">
+        <Outlet />
+      </main>
       <nav className="bg-background border-t">
         <ul className="grid grid-cols-4 gap-2 p-2 py-6">
           <li className="flex justify-center">

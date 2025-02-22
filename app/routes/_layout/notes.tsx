@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { fetchNotes } from "~/utils/notes";
 import type { NoteType } from "~/utils/notes";
 
-export const Route = createFileRoute("/notes")({
+export const Route = createFileRoute("/_layout/notes")({
   loader: async () => {
     const notes = await fetchNotes();
     return {
