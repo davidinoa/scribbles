@@ -8,7 +8,7 @@ export const Route = createFileRoute("/_layout")({
 
 function RouteComponent({ children }: { children: React.ReactNode }) {
   return (
-    <div className="grid grid-rows-[auto_1fr_auto] h-screen">
+    <div className="grid grid-rows-[auto_1fr_auto] min-h-screen h-[100dvh]">
       <header className="bg-primary text-primary-foreground p-4 text-lg font-bold border-b border">
         <Link to="/">Scribbles</Link>
       </header>
