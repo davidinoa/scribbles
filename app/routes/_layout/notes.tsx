@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { fetchNotes } from "~/utils/notes";
 import type { NoteType } from "~/utils/notes";
 
@@ -21,9 +21,10 @@ function NotesPage() {
       <h1 className="text-2xl font-bold mb-4">Notes</h1>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {notes.map((note: NoteType) => (
-          <div
-            key={note.id}
-            className="border rounded-lg p-4 hover:shadow-lg transition-shadow"
+          <Link
+            to="/notes/$noteId"
+            params={{ noteId: note.id }}
+            className="block border rounded-lg p-4 hover:shadow-lg transition-shadow"
           >
             <h2 className="text-lg font-semibold mb-2">{note.title}</h2>
             <p className="text-gray-600 dark:text-gray-400 line-clamp-3">
@@ -32,7 +33,7 @@ function NotesPage() {
             <div className="mt-2 text-sm text-gray-500">
               Status: {note.status}
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>

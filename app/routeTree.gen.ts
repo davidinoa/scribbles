@@ -16,6 +16,8 @@ import { Route as LayoutIndexImport } from './routes/_layout/index'
 import { Route as LayoutSettingsImport } from './routes/_layout/settings'
 import { Route as LayoutNotesImport } from './routes/_layout/notes'
 import { Route as LayoutArchiveImport } from './routes/_layout/archive'
+import { Route as LayoutNotesIndexImport } from './routes/_layout/notes.index'
+import { Route as LayoutNotesNoteIdImport } from './routes/_layout/notes_.$noteId'
 
 // Create/Update Routes
 
@@ -45,6 +47,18 @@ const LayoutNotesRoute = LayoutNotesImport.update({
 const LayoutArchiveRoute = LayoutArchiveImport.update({
   id: '/archive',
   path: '/archive',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+const LayoutNotesIndexRoute = LayoutNotesIndexImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => LayoutNotesRoute,
+} as any)
+
+const LayoutNotesNoteIdRoute = LayoutNotesNoteIdImport.update({
+  id: '/notes_/$noteId',
+  path: '/notes/$noteId',
   getParentRoute: () => LayoutRoute,
 } as any)
 
@@ -87,23 +101,51 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutIndexImport
       parentRoute: typeof LayoutImport
     }
+    '/_layout/notes_/$noteId': {
+      id: '/_layout/notes_/$noteId'
+      path: '/notes/$noteId'
+      fullPath: '/notes/$noteId'
+      preLoaderRoute: typeof LayoutNotesNoteIdImport
+      parentRoute: typeof LayoutImport
+    }
+    '/_layout/notes/': {
+      id: '/_layout/notes/'
+      path: '/'
+      fullPath: '/notes/'
+      preLoaderRoute: typeof LayoutNotesIndexImport
+      parentRoute: typeof LayoutNotesImport
+    }
   }
 }
 
 // Create and export the route tree
 
+interface LayoutNotesRouteChildren {
+  LayoutNotesIndexRoute: typeof LayoutNotesIndexRoute
+}
+
+const LayoutNotesRouteChildren: LayoutNotesRouteChildren = {
+  LayoutNotesIndexRoute: LayoutNotesIndexRoute,
+}
+
+const LayoutNotesRouteWithChildren = LayoutNotesRoute._addFileChildren(
+  LayoutNotesRouteChildren,
+)
+
 interface LayoutRouteChildren {
   LayoutArchiveRoute: typeof LayoutArchiveRoute
-  LayoutNotesRoute: typeof LayoutNotesRoute
+  LayoutNotesRoute: typeof LayoutNotesRouteWithChildren
   LayoutSettingsRoute: typeof LayoutSettingsRoute
   LayoutIndexRoute: typeof LayoutIndexRoute
+  LayoutNotesNoteIdRoute: typeof LayoutNotesNoteIdRoute
 }
 
 const LayoutRouteChildren: LayoutRouteChildren = {
   LayoutArchiveRoute: LayoutArchiveRoute,
-  LayoutNotesRoute: LayoutNotesRoute,
+  LayoutNotesRoute: LayoutNotesRouteWithChildren,
   LayoutSettingsRoute: LayoutSettingsRoute,
   LayoutIndexRoute: LayoutIndexRoute,
+  LayoutNotesNoteIdRoute: LayoutNotesNoteIdRoute,
 }
 
 const LayoutRouteWithChildren =
@@ -112,32 +154,44 @@ const LayoutRouteWithChildren =
 export interface FileRoutesByFullPath {
   '': typeof LayoutRouteWithChildren
   '/archive': typeof LayoutArchiveRoute
-  '/notes': typeof LayoutNotesRoute
+  '/notes': typeof LayoutNotesRouteWithChildren
   '/settings': typeof LayoutSettingsRoute
   '/': typeof LayoutIndexRoute
+  '/notes/$noteId': typeof LayoutNotesNoteIdRoute
+  '/notes/': typeof LayoutNotesIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/archive': typeof LayoutArchiveRoute
-  '/notes': typeof LayoutNotesRoute
   '/settings': typeof LayoutSettingsRoute
   '/': typeof LayoutIndexRoute
+  '/notes/$noteId': typeof LayoutNotesNoteIdRoute
+  '/notes': typeof LayoutNotesIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_layout': typeof LayoutRouteWithChildren
   '/_layout/archive': typeof LayoutArchiveRoute
-  '/_layout/notes': typeof LayoutNotesRoute
+  '/_layout/notes': typeof LayoutNotesRouteWithChildren
   '/_layout/settings': typeof LayoutSettingsRoute
   '/_layout/': typeof LayoutIndexRoute
+  '/_layout/notes_/$noteId': typeof LayoutNotesNoteIdRoute
+  '/_layout/notes/': typeof LayoutNotesIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '' | '/archive' | '/notes' | '/settings' | '/'
+  fullPaths:
+    | ''
+    | '/archive'
+    | '/notes'
+    | '/settings'
+    | '/'
+    | '/notes/$noteId'
+    | '/notes/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/archive' | '/notes' | '/settings' | '/'
+  to: '/archive' | '/settings' | '/' | '/notes/$noteId' | '/notes'
   id:
     | '__root__'
     | '/_layout'
@@ -145,6 +199,8 @@ export interface FileRouteTypes {
     | '/_layout/notes'
     | '/_layout/settings'
     | '/_layout/'
+    | '/_layout/notes_/$noteId'
+    | '/_layout/notes/'
   fileRoutesById: FileRoutesById
 }
 
@@ -175,7 +231,8 @@ export const routeTree = rootRoute
         "/_layout/archive",
         "/_layout/notes",
         "/_layout/settings",
-        "/_layout/"
+        "/_layout/",
+        "/_layout/notes_/$noteId"
       ]
     },
     "/_layout/archive": {
@@ -184,7 +241,10 @@ export const routeTree = rootRoute
     },
     "/_layout/notes": {
       "filePath": "_layout/notes.tsx",
-      "parent": "/_layout"
+      "parent": "/_layout",
+      "children": [
+        "/_layout/notes/"
+      ]
     },
     "/_layout/settings": {
       "filePath": "_layout/settings.tsx",
@@ -193,6 +253,14 @@ export const routeTree = rootRoute
     "/_layout/": {
       "filePath": "_layout/index.tsx",
       "parent": "/_layout"
+    },
+    "/_layout/notes_/$noteId": {
+      "filePath": "_layout/notes_.$noteId.tsx",
+      "parent": "/_layout"
+    },
+    "/_layout/notes/": {
+      "filePath": "_layout/notes.index.tsx",
+      "parent": "/_layout/notes"
     }
   }
 }
