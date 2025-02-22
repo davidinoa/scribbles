@@ -10,7 +10,7 @@ function RouteComponent() {
   const activeLinkProps = { className: 'text-blue-500' }
   return (
     <div className="h-dvh grid grid-rows-[auto_1fr_3.5rem]">
-      <header className="dark:bg-gray-950 dark:text-gray-200 bg-white text-primary-foreground p-4 text-lg font-bold border-b border">
+      <header className="dark:bg-gray-950 dark:text-gray-200 bg-white text-primary-foreground p-4 text-lg font-bold border-b border-gray-200 dark:border-gray-800">
         <Link to="/">Scribbles</Link>
       </header>
       <main className="overflow-y-auto p-4">
