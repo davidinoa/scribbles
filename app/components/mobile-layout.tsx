@@ -1,11 +1,23 @@
 import { Link } from "@tanstack/react-router";
 import { LucideHome, LucideNotebook, LucideSettings } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function MobileLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // During SSR or before hydration, render just the children
+  if (!isMounted) {
+    return children;
+  }
+
   return (
     <div className="grid grid-rows-[auto_1fr_auto] h-screen">
       <header className="bg-primary text-primary-foreground p-4 text-lg font-bold border-b border">
