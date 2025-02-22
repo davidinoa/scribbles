@@ -5,12 +5,10 @@ import {
   createRootRoute,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
-import * as React from "react";
 import { DefaultCatchBoundary } from "../components/default-catch-boundary";
 import { NotFound } from "../components/not-found";
 import appCss from "../styles/app.css?url";
 import { seo } from "../utils/seo";
-import MobileLayout from "~/components/mobile-layout";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -77,7 +75,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body suppressHydrationWarning>
-        <MobileLayout>{children}</MobileLayout>
+        {children}
         <TanStackRouterDevtools position="bottom-right" />
         <Scripts />
       </body>
