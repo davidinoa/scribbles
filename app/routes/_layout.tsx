@@ -8,7 +8,7 @@ export const Route = createFileRoute("/_layout")({
 
 function RouteComponent() {
   return (
-    <div className="h-screen grid grid-rows-[auto_1fr_3.5rem]">
+    <div className="h-dvh grid grid-rows-[auto_1fr_3.5rem]">
       <header className="bg-white text-primary-foreground p-4 text-lg font-bold border-b border">
         <Link to="/">Scribbles</Link>
       </header>
