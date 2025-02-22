@@ -9,6 +9,7 @@ import { DefaultCatchBoundary } from "../components/default-catch-boundary";
 import { NotFound } from "../components/not-found";
 import appCss from "../styles/app.css?url";
 import { seo } from "../utils/seo";
+import MobileLayout from "~/components/mobile-layout";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -63,7 +64,9 @@ export const Route = createRootRoute({
 function RootComponent() {
   return (
     <RootDocument>
-      <Outlet />
+      <MobileLayout>
+        <Outlet />
+      </MobileLayout>
     </RootDocument>
   );
 }
