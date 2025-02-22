@@ -49,6 +49,7 @@ export const Route = createRootRoute({
       { rel: "icon", href: "/favicon.ico" },
     ],
   }),
+  pendingComponent: () => <div>Loading...</div>,
   errorComponent: (props) => {
     return (
       <RootDocument>

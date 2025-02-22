@@ -9,6 +9,7 @@ export const Route = createFileRoute("/_layout/notes")({
       notes,
     };
   },
+  pendingComponent: () => <div>Loading...</div>,
   component: NotesPage,
 });
 

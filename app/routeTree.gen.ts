@@ -13,7 +13,9 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as LayoutImport } from './routes/_layout'
 import { Route as LayoutIndexImport } from './routes/_layout/index'
+import { Route as LayoutSettingsImport } from './routes/_layout/settings'
 import { Route as LayoutNotesImport } from './routes/_layout/notes'
+import { Route as LayoutArchiveImport } from './routes/_layout/archive'
 
 // Create/Update Routes
 
@@ -28,9 +30,21 @@ const LayoutIndexRoute = LayoutIndexImport.update({
   getParentRoute: () => LayoutRoute,
 } as any)
 
+const LayoutSettingsRoute = LayoutSettingsImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
 const LayoutNotesRoute = LayoutNotesImport.update({
   id: '/notes',
   path: '/notes',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+const LayoutArchiveRoute = LayoutArchiveImport.update({
+  id: '/archive',
+  path: '/archive',
   getParentRoute: () => LayoutRoute,
 } as any)
 
@@ -45,11 +59,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutImport
       parentRoute: typeof rootRoute
     }
+    '/_layout/archive': {
+      id: '/_layout/archive'
+      path: '/archive'
+      fullPath: '/archive'
+      preLoaderRoute: typeof LayoutArchiveImport
+      parentRoute: typeof LayoutImport
+    }
     '/_layout/notes': {
       id: '/_layout/notes'
       path: '/notes'
       fullPath: '/notes'
       preLoaderRoute: typeof LayoutNotesImport
+      parentRoute: typeof LayoutImport
+    }
+    '/_layout/settings': {
+      id: '/_layout/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof LayoutSettingsImport
       parentRoute: typeof LayoutImport
     }
     '/_layout/': {
@@ -65,12 +93,16 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface LayoutRouteChildren {
+  LayoutArchiveRoute: typeof LayoutArchiveRoute
   LayoutNotesRoute: typeof LayoutNotesRoute
+  LayoutSettingsRoute: typeof LayoutSettingsRoute
   LayoutIndexRoute: typeof LayoutIndexRoute
 }
 
 const LayoutRouteChildren: LayoutRouteChildren = {
+  LayoutArchiveRoute: LayoutArchiveRoute,
   LayoutNotesRoute: LayoutNotesRoute,
+  LayoutSettingsRoute: LayoutSettingsRoute,
   LayoutIndexRoute: LayoutIndexRoute,
 }
 
@@ -79,28 +111,40 @@ const LayoutRouteWithChildren =
 
 export interface FileRoutesByFullPath {
   '': typeof LayoutRouteWithChildren
+  '/archive': typeof LayoutArchiveRoute
   '/notes': typeof LayoutNotesRoute
+  '/settings': typeof LayoutSettingsRoute
   '/': typeof LayoutIndexRoute
 }
 
 export interface FileRoutesByTo {
+  '/archive': typeof LayoutArchiveRoute
   '/notes': typeof LayoutNotesRoute
+  '/settings': typeof LayoutSettingsRoute
   '/': typeof LayoutIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_layout': typeof LayoutRouteWithChildren
+  '/_layout/archive': typeof LayoutArchiveRoute
   '/_layout/notes': typeof LayoutNotesRoute
+  '/_layout/settings': typeof LayoutSettingsRoute
   '/_layout/': typeof LayoutIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '' | '/notes' | '/'
+  fullPaths: '' | '/archive' | '/notes' | '/settings' | '/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/notes' | '/'
-  id: '__root__' | '/_layout' | '/_layout/notes' | '/_layout/'
+  to: '/archive' | '/notes' | '/settings' | '/'
+  id:
+    | '__root__'
+    | '/_layout'
+    | '/_layout/archive'
+    | '/_layout/notes'
+    | '/_layout/settings'
+    | '/_layout/'
   fileRoutesById: FileRoutesById
 }
 
@@ -128,12 +172,22 @@ export const routeTree = rootRoute
     "/_layout": {
       "filePath": "_layout.tsx",
       "children": [
+        "/_layout/archive",
         "/_layout/notes",
+        "/_layout/settings",
         "/_layout/"
       ]
     },
+    "/_layout/archive": {
+      "filePath": "_layout/archive.tsx",
+      "parent": "/_layout"
+    },
     "/_layout/notes": {
       "filePath": "_layout/notes.tsx",
+      "parent": "/_layout"
+    },
+    "/_layout/settings": {
+      "filePath": "_layout/settings.tsx",
       "parent": "/_layout"
     },
     "/_layout/": {
