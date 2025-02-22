@@ -1,20 +1,20 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { fetchNotes } from "~/utils/notes";
-import type { NoteType } from "~/utils/notes";
+import { createFileRoute, Link } from '@tanstack/react-router'
+import { fetchNotes } from '~/utils/notes'
+import type { NoteType } from '~/utils/notes'
 
-export const Route = createFileRoute("/_layout/notes")({
+export const Route = createFileRoute('/_layout/notes')({
   loader: async () => {
-    const notes = await fetchNotes();
+    const notes = await fetchNotes()
     return {
       notes,
-    };
+    }
   },
   pendingComponent: () => <div>Loading...</div>,
   component: NotesPage,
-});
+})
 
 function NotesPage() {
-  const { notes } = Route.useLoaderData();
+  const { notes } = Route.useLoaderData()
 
   return (
     <div className="p-4">
@@ -37,5 +37,5 @@ function NotesPage() {
         ))}
       </div>
     </div>
-  );
+  )
 }

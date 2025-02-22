@@ -1,22 +1,22 @@
-import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
-import { LucideArchive, LucideNotebook, LucideSettings } from "lucide-react";
-import { LucideHome } from "lucide-react";
+import { createFileRoute, Link, Outlet } from '@tanstack/react-router'
+import { LucideArchive, LucideNotebook, LucideSettings } from 'lucide-react'
+import { LucideHome } from 'lucide-react'
 
-export const Route = createFileRoute("/_layout")({
+export const Route = createFileRoute('/_layout')({
   component: RouteComponent,
-});
+})
 
 function RouteComponent() {
-  const activeLinkProps = { className: "text-blue-500" };
+  const activeLinkProps = { className: 'text-blue-500' }
   return (
     <div className="h-dvh grid grid-rows-[auto_1fr_3.5rem]">
-      <header className="bg-white text-primary-foreground p-4 text-lg font-bold border-b border">
+      <header className="dark:bg-gray-950 dark:text-gray-200 bg-white text-primary-foreground p-4 text-lg font-bold border-b border">
         <Link to="/">Scribbles</Link>
       </header>
       <main className="overflow-y-auto p-4">
         <Outlet />
       </main>
-      <nav className="bg-background border-t fixed bottom-0 left-0 right-0 bg-white">
+      <nav className="dark:bg-gray-950 dark:text-gray-200 border-t fixed bottom-0 left-0 right-0 bg-white">
         <ul className="grid grid-cols-4 gap-2 p-2 py-6">
           <li className="flex justify-center">
             <Link to="/" activeProps={activeLinkProps}>
@@ -41,5 +41,5 @@ function RouteComponent() {
         </ul>
       </nav>
     </div>
-  );
+  )
 }
