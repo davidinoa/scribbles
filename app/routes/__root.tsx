@@ -72,7 +72,7 @@ function RootComponent() {
 function RootDocument({ children }: { children: React.ReactNode }) {
   const isDev = import.meta.env.DEV
   return (
-    <html>
+    <html className="dark">
       <head>
         <HeadContent />
       </head>
