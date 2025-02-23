@@ -2,14 +2,7 @@ import { notFound } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/start'
 import { eq } from 'drizzle-orm'
 import { db } from '~/db'
-import { notes, type tags } from '~/db/schema'
-
-export type NoteType = typeof notes.$inferSelect & {
-  notesToTags?: Array<{
-    id: string
-    tag: typeof tags.$inferSelect
-  }>
-}
+import { notes } from '~/db/schema'
 
 export const fetchNote = createServerFn({ method: 'GET' })
   .validator((d: string) => d)
