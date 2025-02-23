@@ -1,12 +1,6 @@
-import {
-  formOptions,
-  useForm,
-  mergeForm,
-  useTransform,
-  useStore,
-} from '@tanstack/react-form'
+import { formOptions, useForm, useStore } from '@tanstack/react-form'
 import { ServerValidateError } from '@tanstack/react-form/start'
-import { getRouteApi } from '@tanstack/react-router'
+import { useRouter } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/start'
 import { setResponseStatus } from '@tanstack/start/server'
 import { db } from '~/db'
@@ -26,21 +20,29 @@ const formOpts = formOptions({
 })
 
 export function NoteEditor() {
-  const routeApi = getRouteApi('/_layout/')
-  const { state } = routeApi.useLoaderData()
+  const router = useRouter()
 
   const form = useForm({
     ...formOpts,
-    transform: useTransform((baseForm) => mergeForm(baseForm, state), [state]),
+    onSubmit: async (data) => {
+      const formData = new FormData()
+      formData.append('title', data.value.title)
+      formData.append('content', data.value.content)
+      await handleForm({ data: formData }).then(() => {
+        router.navigate({ to: '/notes' })
+      })
+    },
   })
   const formErrors = useStore(form.store, (formState) => formState.errors)
 
   return (
     <form
-      method="post"
-      action={handleForm.url}
-      encType="multipart/form-data"
       className="space-y-6"
+      onSubmit={(e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        form.handleSubmit()
+      }}
     >
       {formErrors.map((error) => (
         <p
@@ -148,20 +150,17 @@ export const handleForm = createServerFn({ method: 'POST' })
   })
   .handler(async (ctx) => {
     try {
-      const validatedData = await serverValidate(ctx.data)
+      await serverValidate(ctx.data)
       const formData = Object.fromEntries(ctx.data.entries())
-      const [newNote] = await db.insert(notes).values({
+      await db.insert(notes).values({
         title: formData.title as string,
         content: formData.content as string,
         isArchived: false,
       })
     } catch (e) {
-      if (e instanceof ServerValidateError) {
-        return e.response
-      }
+      if (e instanceof ServerValidateError) return e.response
       console.error(e)
       setResponseStatus(500)
       return 'There was an internal error'
     }
-    return new Response('ok', { status: 301, headers: { Location: '/notes' } })
   })

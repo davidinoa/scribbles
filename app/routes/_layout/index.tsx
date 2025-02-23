@@ -7,17 +7,8 @@ import {
 import { createServerFn } from '@tanstack/start'
 import { NoteEditor } from '~/components/note-editor'
 
-export const getFormDataFromServer = createServerFn({ method: 'GET' }).handler(
-  async () => {
-    return getFormData()
-  },
-)
-
 export const Route = createFileRoute('/_layout/')({
   component: Home,
-  loader: async () => ({
-    state: await getFormDataFromServer(),
-  }),
 })
 
 function Home() {
