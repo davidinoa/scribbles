@@ -21,9 +21,8 @@ export const Route = createRootRoute({
         content: 'width=device-width, initial-scale=1',
       },
       ...seo({
-        title:
-          'TanStack Start | Type-Safe, Client-First, Full-Stack React Framework',
-        description: `TanStack Start is a type-safe, client-first, full-stack React framework. `,
+        title: 'Scribbles',
+        description: `Scribbles is a simple note-taking app.`,
       }),
     ],
     links: [
@@ -47,8 +46,22 @@ export const Route = createRootRoute({
       },
       { rel: 'manifest', href: '/site.webmanifest', color: '#fffff' },
       { rel: 'icon', href: '/favicon.ico' },
+      {
+        rel: 'preconnect',
+        href: 'https://fonts.googleapis.com',
+      },
+      {
+        rel: 'preconnect',
+        href: 'https://fonts.gstatic.com',
+        crossorigin: true,
+      },
+      {
+        rel: 'stylesheet',
+        href: 'https://fonts.googleapis.com/css2?family=Pacifico&display=swap',
+      },
     ],
   }),
+
   pendingComponent: () => <div>Loading...</div>,
   errorComponent: (props) => {
     return (

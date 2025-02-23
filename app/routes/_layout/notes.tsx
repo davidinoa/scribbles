@@ -11,6 +11,10 @@ export const Route = createFileRoute('/_layout/notes')({
   },
   pendingComponent: () => <div>Loading...</div>,
   component: NotesPage,
+  shouldReload: true,
+  pendingMs: 0,
+  pendingMinMs: 5_000,
+  preload: false,
 })
 
 function NotesPage() {
