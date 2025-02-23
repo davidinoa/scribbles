@@ -1,12 +1,8 @@
 import { formOptions, useForm, useStore } from '@tanstack/react-form'
-import { ServerValidateError } from '@tanstack/react-form/start'
 import { useRouter } from '@tanstack/react-router'
-import { createServerFn } from '@tanstack/start'
-import { setResponseStatus } from '@tanstack/start/server'
-import { db } from '~/db'
-import { notes } from '~/db/schema'
+import { useServerFn } from '@tanstack/start'
 import { cn } from '~/lib/utils'
-import { serverValidate } from '~/utils/editor'
+import { handleForm } from '~/server-fns/handle-form'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
 import { Textarea } from './ui/textarea'
@@ -20,6 +16,7 @@ const formOpts = formOptions({
 })
 
 export function NoteEditor() {
+  const handleFormFn = useServerFn(handleForm)
   const router = useRouter()
 
   const form = useForm({
@@ -28,7 +25,7 @@ export function NoteEditor() {
       const formData = new FormData()
       formData.append('title', data.value.title)
       formData.append('content', data.value.content)
-      await handleForm({ data: formData }).then(() => {
+      await handleFormFn({ data: formData }).then(() => {
         router.navigate({ to: '/notes' })
       })
     },
@@ -140,27 +137,3 @@ export function NoteEditor() {
     </form>
   )
 }
-
-export const handleForm = createServerFn({ method: 'POST' })
-  .validator((data: unknown) => {
-    if (!(data instanceof FormData)) {
-      throw new Error('Invalid form data')
-    }
-    return data
-  })
-  .handler(async (ctx) => {
-    try {
-      await serverValidate(ctx.data)
-      const formData = Object.fromEntries(ctx.data.entries())
-      await db.insert(notes).values({
-        title: formData.title as string,
-        content: formData.content as string,
-        isArchived: false,
-      })
-    } catch (e) {
-      if (e instanceof ServerValidateError) return e.response
-      console.error(e)
-      setResponseStatus(500)
-      return 'There was an internal error'
-    }
-  })

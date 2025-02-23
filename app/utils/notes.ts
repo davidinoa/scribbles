@@ -42,3 +42,11 @@ export const fetchNotes = createServerFn({ method: 'GET' })
       },
     })
   })
+
+export const deleteNote = createServerFn({ method: 'POST' })
+  .validator((d: string) => d)
+  .handler(async ({ data: noteId }) => {
+    console.info(`Deleting note with id ${noteId}...`)
+    await db.delete(notes).where(eq(notes.id, noteId))
+    return { success: true }
+  })
