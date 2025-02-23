@@ -17,6 +17,9 @@ import { Route as LayoutSettingsImport } from './routes/_layout/settings'
 import { Route as LayoutNotesImport } from './routes/_layout/notes'
 import { Route as LayoutArchiveImport } from './routes/_layout/archive'
 import { Route as LayoutNotesIndexImport } from './routes/_layout/notes.index'
+import { Route as LayoutSettingsPasswordImport } from './routes/_layout/settings_.password'
+import { Route as LayoutSettingsFontImport } from './routes/_layout/settings_.font'
+import { Route as LayoutSettingsAppearanceImport } from './routes/_layout/settings_.appearance'
 import { Route as LayoutNotesNoteIdImport } from './routes/_layout/notes_.$noteId'
 
 // Create/Update Routes
@@ -54,6 +57,24 @@ const LayoutNotesIndexRoute = LayoutNotesIndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => LayoutNotesRoute,
+} as any)
+
+const LayoutSettingsPasswordRoute = LayoutSettingsPasswordImport.update({
+  id: '/settings_/password',
+  path: '/settings/password',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+const LayoutSettingsFontRoute = LayoutSettingsFontImport.update({
+  id: '/settings_/font',
+  path: '/settings/font',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+const LayoutSettingsAppearanceRoute = LayoutSettingsAppearanceImport.update({
+  id: '/settings_/appearance',
+  path: '/settings/appearance',
+  getParentRoute: () => LayoutRoute,
 } as any)
 
 const LayoutNotesNoteIdRoute = LayoutNotesNoteIdImport.update({
@@ -108,6 +129,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutNotesNoteIdImport
       parentRoute: typeof LayoutImport
     }
+    '/_layout/settings_/appearance': {
+      id: '/_layout/settings_/appearance'
+      path: '/settings/appearance'
+      fullPath: '/settings/appearance'
+      preLoaderRoute: typeof LayoutSettingsAppearanceImport
+      parentRoute: typeof LayoutImport
+    }
+    '/_layout/settings_/font': {
+      id: '/_layout/settings_/font'
+      path: '/settings/font'
+      fullPath: '/settings/font'
+      preLoaderRoute: typeof LayoutSettingsFontImport
+      parentRoute: typeof LayoutImport
+    }
+    '/_layout/settings_/password': {
+      id: '/_layout/settings_/password'
+      path: '/settings/password'
+      fullPath: '/settings/password'
+      preLoaderRoute: typeof LayoutSettingsPasswordImport
+      parentRoute: typeof LayoutImport
+    }
     '/_layout/notes/': {
       id: '/_layout/notes/'
       path: '/'
@@ -138,6 +180,9 @@ interface LayoutRouteChildren {
   LayoutSettingsRoute: typeof LayoutSettingsRoute
   LayoutIndexRoute: typeof LayoutIndexRoute
   LayoutNotesNoteIdRoute: typeof LayoutNotesNoteIdRoute
+  LayoutSettingsAppearanceRoute: typeof LayoutSettingsAppearanceRoute
+  LayoutSettingsFontRoute: typeof LayoutSettingsFontRoute
+  LayoutSettingsPasswordRoute: typeof LayoutSettingsPasswordRoute
 }
 
 const LayoutRouteChildren: LayoutRouteChildren = {
@@ -146,6 +191,9 @@ const LayoutRouteChildren: LayoutRouteChildren = {
   LayoutSettingsRoute: LayoutSettingsRoute,
   LayoutIndexRoute: LayoutIndexRoute,
   LayoutNotesNoteIdRoute: LayoutNotesNoteIdRoute,
+  LayoutSettingsAppearanceRoute: LayoutSettingsAppearanceRoute,
+  LayoutSettingsFontRoute: LayoutSettingsFontRoute,
+  LayoutSettingsPasswordRoute: LayoutSettingsPasswordRoute,
 }
 
 const LayoutRouteWithChildren =
@@ -158,6 +206,9 @@ export interface FileRoutesByFullPath {
   '/settings': typeof LayoutSettingsRoute
   '/': typeof LayoutIndexRoute
   '/notes/$noteId': typeof LayoutNotesNoteIdRoute
+  '/settings/appearance': typeof LayoutSettingsAppearanceRoute
+  '/settings/font': typeof LayoutSettingsFontRoute
+  '/settings/password': typeof LayoutSettingsPasswordRoute
   '/notes/': typeof LayoutNotesIndexRoute
 }
 
@@ -166,6 +217,9 @@ export interface FileRoutesByTo {
   '/settings': typeof LayoutSettingsRoute
   '/': typeof LayoutIndexRoute
   '/notes/$noteId': typeof LayoutNotesNoteIdRoute
+  '/settings/appearance': typeof LayoutSettingsAppearanceRoute
+  '/settings/font': typeof LayoutSettingsFontRoute
+  '/settings/password': typeof LayoutSettingsPasswordRoute
   '/notes': typeof LayoutNotesIndexRoute
 }
 
@@ -177,6 +231,9 @@ export interface FileRoutesById {
   '/_layout/settings': typeof LayoutSettingsRoute
   '/_layout/': typeof LayoutIndexRoute
   '/_layout/notes_/$noteId': typeof LayoutNotesNoteIdRoute
+  '/_layout/settings_/appearance': typeof LayoutSettingsAppearanceRoute
+  '/_layout/settings_/font': typeof LayoutSettingsFontRoute
+  '/_layout/settings_/password': typeof LayoutSettingsPasswordRoute
   '/_layout/notes/': typeof LayoutNotesIndexRoute
 }
 
@@ -189,9 +246,20 @@ export interface FileRouteTypes {
     | '/settings'
     | '/'
     | '/notes/$noteId'
+    | '/settings/appearance'
+    | '/settings/font'
+    | '/settings/password'
     | '/notes/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/archive' | '/settings' | '/' | '/notes/$noteId' | '/notes'
+  to:
+    | '/archive'
+    | '/settings'
+    | '/'
+    | '/notes/$noteId'
+    | '/settings/appearance'
+    | '/settings/font'
+    | '/settings/password'
+    | '/notes'
   id:
     | '__root__'
     | '/_layout'
@@ -200,6 +268,9 @@ export interface FileRouteTypes {
     | '/_layout/settings'
     | '/_layout/'
     | '/_layout/notes_/$noteId'
+    | '/_layout/settings_/appearance'
+    | '/_layout/settings_/font'
+    | '/_layout/settings_/password'
     | '/_layout/notes/'
   fileRoutesById: FileRoutesById
 }
@@ -232,7 +303,10 @@ export const routeTree = rootRoute
         "/_layout/notes",
         "/_layout/settings",
         "/_layout/",
-        "/_layout/notes_/$noteId"
+        "/_layout/notes_/$noteId",
+        "/_layout/settings_/appearance",
+        "/_layout/settings_/font",
+        "/_layout/settings_/password"
       ]
     },
     "/_layout/archive": {
@@ -256,6 +330,18 @@ export const routeTree = rootRoute
     },
     "/_layout/notes_/$noteId": {
       "filePath": "_layout/notes_.$noteId.tsx",
+      "parent": "/_layout"
+    },
+    "/_layout/settings_/appearance": {
+      "filePath": "_layout/settings_.appearance.tsx",
+      "parent": "/_layout"
+    },
+    "/_layout/settings_/font": {
+      "filePath": "_layout/settings_.font.tsx",
+      "parent": "/_layout"
+    },
+    "/_layout/settings_/password": {
+      "filePath": "_layout/settings_.password.tsx",
       "parent": "/_layout"
     },
     "/_layout/notes/": {
