@@ -9,6 +9,7 @@ import { DefaultCatchBoundary } from '../components/default-catch-boundary'
 import { NotFound } from '../components/not-found'
 import appCss from '../styles/app.css?url'
 import { seo } from '../utils/seo'
+import { ClerkProvider } from '@clerk/tanstack-start'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -85,15 +86,17 @@ function RootComponent() {
 function RootDocument({ children }: { children: React.ReactNode }) {
   const isDev = import.meta.env.DEV
   return (
-    <html className="dark">
-      <head>
-        <HeadContent />
-      </head>
-      <body suppressHydrationWarning>
-        {children}
-        {isDev && <TanStackRouterDevtools position="bottom-right" />}
-        <Scripts />
-      </body>
-    </html>
+    <ClerkProvider>
+      <html className="dark">
+        <head>
+          <HeadContent />
+        </head>
+        <body suppressHydrationWarning>
+          {children}
+          {isDev && <TanStackRouterDevtools position="bottom-right" />}
+          <Scripts />
+        </body>
+      </html>
+    </ClerkProvider>
   )
 }

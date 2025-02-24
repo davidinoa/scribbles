@@ -7,7 +7,7 @@ import {
 } from 'lucide-react'
 import { LucideHome } from 'lucide-react'
 import { Button } from '~/components/ui/button'
-
+import { UserButton } from '@clerk/tanstack-start'
 export const Route = createFileRoute('/_layout')({
   component: RouteComponent,
 })
@@ -18,13 +18,14 @@ function RouteComponent() {
   }
   return (
     <div className="h-dvh grid grid-rows-[auto_1fr_3.5rem]">
-      <header className="bg-background-2 text-foreground p-4 text-lg font-bold border-b border-border">
+      <header className="bg-background-2 text-foreground p-4 text-lg font-bold border-b border-border grid grid-cols-[1fr_auto]">
         <div className="flex items-center gap-4">
           <img src="/logo.svg" alt="Scribbles" className="size-8" />
           <Link to="/" className="pacifico-regular text-2xl">
             Scribbles
           </Link>
         </div>
+        <UserButton />
       </header>
       <main className="overflow-y-auto p-4">
         <Outlet />

@@ -13,7 +13,7 @@ export const Route = createFileRoute('/_layout/notes')({
   component: NotesPage,
   shouldReload: true,
   pendingMs: 0,
-  pendingMinMs: 5_000,
+  pendingMinMs: 3_000,
   preload: false,
 })
 

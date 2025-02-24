@@ -11,6 +11,7 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as SignInImport } from './routes/sign-in'
 import { Route as LayoutImport } from './routes/_layout'
 import { Route as LayoutIndexImport } from './routes/_layout/index'
 import { Route as LayoutSettingsImport } from './routes/_layout/settings'
@@ -23,6 +24,12 @@ import { Route as LayoutSettingsAppearanceImport } from './routes/_layout/settin
 import { Route as LayoutNotesNoteIdImport } from './routes/_layout/notes_.$noteId'
 
 // Create/Update Routes
+
+const SignInRoute = SignInImport.update({
+  id: '/sign-in',
+  path: '/sign-in',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const LayoutRoute = LayoutImport.update({
   id: '/_layout',
@@ -92,6 +99,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: ''
       preLoaderRoute: typeof LayoutImport
+      parentRoute: typeof rootRoute
+    }
+    '/sign-in': {
+      id: '/sign-in'
+      path: '/sign-in'
+      fullPath: '/sign-in'
+      preLoaderRoute: typeof SignInImport
       parentRoute: typeof rootRoute
     }
     '/_layout/archive': {
@@ -201,6 +215,7 @@ const LayoutRouteWithChildren =
 
 export interface FileRoutesByFullPath {
   '': typeof LayoutRouteWithChildren
+  '/sign-in': typeof SignInRoute
   '/archive': typeof LayoutArchiveRoute
   '/notes': typeof LayoutNotesRouteWithChildren
   '/settings': typeof LayoutSettingsRoute
@@ -213,6 +228,7 @@ export interface FileRoutesByFullPath {
 }
 
 export interface FileRoutesByTo {
+  '/sign-in': typeof SignInRoute
   '/archive': typeof LayoutArchiveRoute
   '/settings': typeof LayoutSettingsRoute
   '/': typeof LayoutIndexRoute
@@ -226,6 +242,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_layout': typeof LayoutRouteWithChildren
+  '/sign-in': typeof SignInRoute
   '/_layout/archive': typeof LayoutArchiveRoute
   '/_layout/notes': typeof LayoutNotesRouteWithChildren
   '/_layout/settings': typeof LayoutSettingsRoute
@@ -241,6 +258,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | ''
+    | '/sign-in'
     | '/archive'
     | '/notes'
     | '/settings'
@@ -252,6 +270,7 @@ export interface FileRouteTypes {
     | '/notes/'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/sign-in'
     | '/archive'
     | '/settings'
     | '/'
@@ -263,6 +282,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_layout'
+    | '/sign-in'
     | '/_layout/archive'
     | '/_layout/notes'
     | '/_layout/settings'
@@ -277,10 +297,12 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   LayoutRoute: typeof LayoutRouteWithChildren
+  SignInRoute: typeof SignInRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   LayoutRoute: LayoutRouteWithChildren,
+  SignInRoute: SignInRoute,
 }
 
 export const routeTree = rootRoute
@@ -293,7 +315,8 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/_layout"
+        "/_layout",
+        "/sign-in"
       ]
     },
     "/_layout": {
@@ -308,6 +331,9 @@ export const routeTree = rootRoute
         "/_layout/settings_/font",
         "/_layout/settings_/password"
       ]
+    },
+    "/sign-in": {
+      "filePath": "sign-in.tsx"
     },
     "/_layout/archive": {
       "filePath": "_layout/archive.tsx",

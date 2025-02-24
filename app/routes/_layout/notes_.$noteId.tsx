@@ -59,7 +59,7 @@ function RouteComponent() {
           </AlertDialogContent>
         </AlertDialog>
       </div>
-      <p className="text-gray-700">{note.content}</p>
+      <p>{note.content}</p>
     </div>
   )
 }

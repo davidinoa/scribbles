@@ -10,7 +10,7 @@ yarn.lock
 .vercel
 .output
 .vinxi
-.vscode
+.vscode/
 
 /build/
 /api/
@@ -25,3 +25,4 @@ yarn.lock
 /playwright/.cache/
 
 references/
+.cursor/
