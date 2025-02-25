@@ -5,21 +5,7 @@ import { db } from '~/db'
 import { notesToTags, tags } from '~/db/schema'
 import { sql } from 'drizzle-orm'
 import { createServerFn } from '@tanstack/start'
-
-const fetchTags = createServerFn({ method: 'GET' }).handler(async () => {
-  const tagsWithCounts = await db
-    .select({
-      id: tags.id,
-      name: tags.name,
-      count: sql<number>`count(${notesToTags.noteId})::int`,
-    })
-    .from(tags)
-    .leftJoin(notesToTags, sql`${tags.id} = ${notesToTags.tagId}`)
-    .groupBy(tags.id, tags.name)
-    .orderBy(tags.name)
-
-  return tagsWithCounts
-})
+import { fetchTags } from '~/lib/server-fns/fetch-tags'
 
 export const Route = createFileRoute('/_layout/tags')({
   loader: async () => {
