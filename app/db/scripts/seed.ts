@@ -13,6 +13,9 @@ async function main() {
     await db.delete(notes)
     await db.delete(tags)
 
+    // Mock user ID for seed data
+    const MOCK_USER_ID = 'user_2tVPPUvwRbbOBDEKB9bjYGO1pFw'
+
     const tagNames = [
       'work',
       'personal',
@@ -33,6 +36,7 @@ async function main() {
           .insert(tags)
           .values({
             name,
+            userId: MOCK_USER_ID,
           } satisfies InsertTag)
           .returning()
           .then((res) => res[0]),
@@ -64,6 +68,7 @@ async function main() {
             content: faker.lorem.paragraphs(3),
             isArchived: faker.datatype.boolean(),
             createdAt: randomDate,
+            userId: MOCK_USER_ID,
           } satisfies InsertNote)
           .returning()
           .then((res) => res[0])

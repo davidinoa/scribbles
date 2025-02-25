@@ -10,6 +10,9 @@ import { NotFound } from '../components/not-found'
 import appCss from '../styles/app.css?url'
 import { seo } from '../utils/seo'
 import { ClerkProvider } from '@clerk/tanstack-start'
+import { createServerFn } from '@tanstack/start'
+import { getAuth } from '@clerk/tanstack-start/server'
+import { getWebRequest } from '@tanstack/start/server'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -62,7 +65,12 @@ export const Route = createRootRoute({
       },
     ],
   }),
-
+  beforeLoad: async () => {
+    const { userId } = await fetchClerkAuth()
+    return {
+      userId,
+    }
+  },
   pendingComponent: () => <div>Loading...</div>,
   errorComponent: (props) => {
     return (
@@ -77,26 +85,34 @@ export const Route = createRootRoute({
 
 function RootComponent() {
   return (
-    <RootDocument>
-      <Outlet />
-    </RootDocument>
+    <ClerkProvider>
+      <RootDocument>
+        <Outlet />
+      </RootDocument>
+    </ClerkProvider>
   )
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   const isDev = import.meta.env.DEV
   return (
-    <ClerkProvider>
-      <html className="dark">
-        <head>
-          <HeadContent />
-        </head>
-        <body suppressHydrationWarning>
-          {children}
-          {isDev && <TanStackRouterDevtools position="bottom-right" />}
-          <Scripts />
-        </body>
-      </html>
-    </ClerkProvider>
+    <html className="dark">
+      <head>
+        <HeadContent />
+      </head>
+      <body suppressHydrationWarning>
+        {children}
+        {isDev && <TanStackRouterDevtools position="bottom-right" />}
+        <Scripts />
+      </body>
+    </html>
   )
 }
+
+const fetchClerkAuth = createServerFn({ method: 'GET' }).handler(async () => {
+  const { userId } = await getAuth(getWebRequest()!)
+
+  return {
+    userId,
+  }
+})

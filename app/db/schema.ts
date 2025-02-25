@@ -38,11 +38,15 @@ export const tags = createTable(
   {
     id: createId().primaryKey(),
     name: varchar('name', { length: 50 }).notNull().unique(),
+    userId: varchar('user_id', { length: 64 }).notNull(),
     createdAt: timestamp('created_at', { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
   },
-  (table) => [index('tag_name_idx').on(table.name)],
+  (table) => [
+    index('tag_name_idx').on(table.name),
+    index('tag_user_id_idx').on(table.userId),
+  ],
 )
 
 export const notes = createTable(
@@ -52,6 +56,7 @@ export const notes = createTable(
     title: varchar('title', { length: 255 }).notNull(),
     content: text('content'),
     isArchived: boolean('is_archived').default(false).notNull(),
+    userId: varchar('user_id', { length: 64 }).notNull(),
     createdAt: timestamp('created_at', { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -59,7 +64,10 @@ export const notes = createTable(
       () => new Date(),
     ),
   },
-  (table) => [index('note_title_idx').on(table.title)],
+  (table) => [
+    index('note_title_idx').on(table.title),
+    index('note_user_id_idx').on(table.userId),
+  ],
 )
 
 export const notesToTags = createTable(
