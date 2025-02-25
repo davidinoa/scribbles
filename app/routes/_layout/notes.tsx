@@ -1,28 +1,64 @@
-import { createFileRoute } from '@tanstack/react-router'
+import {
+  createFileRoute,
+  retainSearchParams,
+  useNavigate,
+} from '@tanstack/react-router'
+import { z } from 'zod'
 import { NoteCard } from '~/components/note-card'
+import { Input } from '~/components/ui/input'
 import { fetchNotes } from '~/utils/notes'
+import { useState, useEffect } from 'react'
 
 export const Route = createFileRoute('/_layout/notes')({
-  loader: async () => {
-    const notes = await fetchNotes({ data: false })
+  validateSearch: z.object({
+    filterBy: z.string().optional(),
+  }).parse,
+  search: {
+    middlewares: [retainSearchParams(['filterBy'])],
+  },
+  loaderDeps: ({ search }) => ({
+    filterBy: search.filterBy,
+  }),
+  loader: async ({ deps }) => {
+    const notes = await fetchNotes({ data: { filterBy: deps.filterBy } })
     return {
       notes,
     }
   },
-  pendingComponent: () => <div>Loading...</div>,
+
   component: NotesPage,
-  shouldReload: true,
-  pendingMs: 0,
-  pendingMinMs: 3_000,
-  preload: false,
 })
 
 function NotesPage() {
+  const navigate = useNavigate({ from: Route.fullPath })
+  const search = Route.useSearch()
   const { notes } = Route.useLoaderData()
+  const [filterDraft, setFilterDraft] = useState(search.filterBy ?? '')
+
+  useEffect(() => {
+    setFilterDraft(search.filterBy ?? '')
+  }, [search.filterBy])
+
+  useEffect(() => {
+    navigate({
+      search: (old) => ({
+        ...old,
+        filterBy: filterDraft || undefined,
+      }),
+      replace: true,
+    })
+  }, [filterDraft])
 
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Notes</h1>
+      <Input
+        type="search"
+        placeholder="Search notes"
+        className="mb-4"
+        value={filterDraft}
+        onChange={(e) => setFilterDraft(e.target.value)}
+      />
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {notes.map((note) => (
           <NoteCard key={note.id} note={note} />

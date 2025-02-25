@@ -3,6 +3,15 @@ import { createServerFn } from '@tanstack/start'
 import { eq } from 'drizzle-orm'
 import { db } from '~/db'
 import { notes } from '~/db/schema'
+import { z } from 'zod'
+
+const fetchNotesParamsSchema = z
+  .object({
+    statusFilter: z.enum(['active', 'archived']).optional().default('active'),
+    filterBy: z.string().optional(),
+  })
+  .optional()
+  .default({ statusFilter: 'active' })
 
 export const fetchNote = createServerFn({ method: 'GET' })
   .validator((d: string) => d)
@@ -20,11 +29,19 @@ export const fetchNote = createServerFn({ method: 'GET' })
   })
 
 export const fetchNotes = createServerFn({ method: 'GET' })
-  .validator((d?: boolean) => d)
-  .handler(async ({ data: isArchived = false }) => {
-    console.info(`Fetching ${isArchived ? 'archived' : 'active'} notes...`)
+  .validator(fetchNotesParamsSchema)
+  .handler(async ({ data: { statusFilter, filterBy } }) => {
     return db.query.notes.findMany({
-      where: eq(notes.isArchived, isArchived),
+      where: (notes, { and, eq, or, ilike }) =>
+        filterBy
+          ? and(
+              eq(notes.isArchived, statusFilter === 'archived'),
+              or(
+                ilike(notes.title, `%${filterBy}%`),
+                ilike(notes.content, `%${filterBy}%`),
+              ),
+            )
+          : eq(notes.isArchived, statusFilter === 'archived'),
       orderBy: (notes, { desc }) => [desc(notes.createdAt)],
       with: {
         notesToTags: {
