@@ -19,6 +19,13 @@ export const fetchNote = createServerFn({ method: 'GET' })
     console.info(`Fetching note with id ${noteId}...`)
     const note = await db.query.notes.findFirst({
       where: eq(notes.id, noteId),
+      with: {
+        notesToTags: {
+          with: {
+            tag: true,
+          },
+        },
+      },
     })
 
     if (!note) {

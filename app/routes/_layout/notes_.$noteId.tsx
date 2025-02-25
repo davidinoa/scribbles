@@ -13,6 +13,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '~/components/ui/alert-dialog'
+import { Card, CardContent, CardFooter, CardHeader } from '~/components/ui/card'
+import { format } from 'date-fns'
+import { Archive, Trash2 } from 'lucide-react'
+import { archiveNote } from '~/lib/server-fns/archive-note'
 
 export const Route = createFileRoute('/_layout/notes_/$noteId')({
   component: RouteComponent,
@@ -28,19 +32,75 @@ function RouteComponent() {
   const { note } = Route.useLoaderData()
   const router = useRouter()
   const deleteNoteFn = useServerFn(deleteNote)
+  const archiveNoteFn = useServerFn(archiveNote)
 
   const handleDelete = async () => {
     await deleteNoteFn({ data: note.id })
     router.navigate({ to: '/notes' })
   }
 
+  const handleArchive = async () => {
+    await archiveNoteFn({ data: note.id })
+    router.navigate({ to: '/notes' })
+  }
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">{note.title}</h1>
+    <Card className="max-w-3xl mx-auto">
+      <CardHeader className="space-y-4">
+        <div>
+          <h1 className="text-2xl font-bold">{note.title}</h1>
+          <div className="text-sm text-muted-foreground mt-2">
+            Created {format(new Date(note.createdAt), 'PPP')}
+          </div>
+          {note.notesToTags?.length > 0 && (
+            <div className="flex gap-1.5 mt-4">
+              {note.notesToTags.map((noteToTag) => (
+                <span
+                  key={noteToTag.id}
+                  className="px-2.5 py-0.5 bg-secondary text-secondary-foreground rounded-full text-xs font-medium"
+                >
+                  {noteToTag.tag.name}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="prose prose-stone dark:prose-invert max-w-none">
+          <p>{note.content}</p>
+        </div>
+      </CardContent>
+      <CardFooter className="flex justify-end gap-2 pt-6 border-t">
         <AlertDialog>
           <AlertDialogTrigger asChild>
-            <Button variant="destructive">Delete Note</Button>
+            <Button variant="outline" className="gap-2">
+              <Archive className="h-4 w-4" />
+              Archive
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Archive this note?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This note will be moved to your archives. You can restore it
+                later.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleArchive}>
+                Archive
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button variant="destructive" className="gap-2">
+              <Trash2 className="h-4 w-4" />
+              Delete
+            </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
@@ -58,8 +118,7 @@ function RouteComponent() {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
-      </div>
-      <p>{note.content}</p>
-    </div>
+      </CardFooter>
+    </Card>
   )
 }
