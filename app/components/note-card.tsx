@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { type InferSelectModel } from 'drizzle-orm'
 import { type notes } from '~/db/schema'
+import { cn } from '~/lib/utils'
 
 type Note = InferSelectModel<typeof notes> & {
   notesToTags: Array<{
@@ -21,7 +22,12 @@ export function NoteCard({ note }: NoteCardProps) {
       key={note.id}
       to="/notes/$noteId"
       params={{ noteId: note.id }}
-      className="block border rounded-lg p-4 hover:shadow-lg transition-shadow"
+      className={cn(
+        'block rounded-lg p-4 hover:shadow-lg transition-shadow',
+        note.isArchived
+          ? 'border-2 border-dashed border-gray-400 dark:border-gray-600'
+          : 'border border-solid border-border',
+      )}
     >
       <h2 className="text-lg font-semibold mb-2">{note.title}</h2>
       <p className="text-gray-600 dark:text-gray-400 line-clamp-3">
