@@ -105,12 +105,25 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             __html: `
               (function() {
                 try {
+                  // Initialize color theme
                   var theme = localStorage.getItem('theme');
                   var root = document.documentElement;
                   if (theme === 'dark') {
                     root.classList.add('dark');
                   } else if (theme === 'light') {
                     root.classList.remove('dark');
+                  }
+                  
+                  // Initialize font theme
+                  var fontTheme = localStorage.getItem('fontTheme');
+                  if (fontTheme) {
+                    // Remove all font classes first
+                    root.classList.remove('font-sans', 'font-serif', 'font-mono');
+                    // Add the selected font class
+                    root.classList.add('font-' + fontTheme);
+                  } else {
+                    // Default to sans if no font theme is set
+                    root.classList.add('font-sans');
                   }
                 } catch (e) {
                   console.error('Error applying theme:', e);

@@ -1,16 +1,24 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Button } from '../../components/ui/button'
 import { BackButton } from '../../components/ui/back-button'
+import { useTheme } from '../../contexts/theme-context'
+import type { FontTheme } from '../../contexts/theme-context'
 
 export const Route = createFileRoute('/_layout/settings_/font')({
   component: FontSettings,
 })
 
 function FontSettings() {
+  const { fontTheme, setFontTheme } = useTheme()
+
   const fonts = [
-    { name: 'System Default', className: 'font-sans' },
-    { name: 'Serif', className: 'font-serif' },
-    { name: 'Monospace', className: 'font-mono' },
+    {
+      name: 'System Default',
+      value: 'sans' as FontTheme,
+      className: 'font-sans',
+    },
+    { name: 'Serif', value: 'serif' as FontTheme, className: 'font-serif' },
+    { name: 'Monospace', value: 'mono' as FontTheme, className: 'font-mono' },
   ]
 
   return (
@@ -25,7 +33,10 @@ function FontSettings() {
             key={font.name}
             variant="outline"
             size="lg"
-            className={`w-full justify-start gap-3 px-4 py-4 text-base ${font.className}`}
+            className={`w-full justify-start gap-3 px-4 py-4 text-base ${
+              font.className
+            } ${fontTheme === font.value ? 'border-primary' : ''}`}
+            onClick={() => setFontTheme(font.value)}
           >
             {font.name}
           </Button>
