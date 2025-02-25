@@ -1,8 +1,18 @@
 import { Link } from '@tanstack/react-router'
-import type { NoteType } from '~/utils/notes'
+import { type InferSelectModel } from 'drizzle-orm'
+import { type notes } from '~/db/schema'
+
+type Note = InferSelectModel<typeof notes> & {
+  notesToTags: Array<{
+    id: string
+    tag: {
+      name: string
+    }
+  }>
+}
 
 interface NoteCardProps {
-  note: NoteType
+  note: Note
 }
 
 export function NoteCard({ note }: NoteCardProps) {

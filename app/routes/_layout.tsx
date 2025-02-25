@@ -4,6 +4,7 @@ import {
   LucideNotebook,
   LucideSettings,
   LucideSun,
+  LucideTag,
 } from 'lucide-react'
 import { LucideHome } from 'lucide-react'
 import { Button } from '~/components/ui/button'
@@ -31,7 +32,7 @@ function RouteComponent() {
         <Outlet />
       </main>
       <nav className="bg-background text-foreground border-t border-border fixed bottom-0 left-0 right-0">
-        <ul className="grid grid-cols-4 gap-2 p-2">
+        <ul className="grid grid-cols-5 gap-2 p-2">
           <li className="flex justify-center">
             <Button variant="link" asChild className="p-6">
               <Link
@@ -51,6 +52,17 @@ function RouteComponent() {
                 className="block size-fit"
               >
                 <LucideNotebook />
+              </Link>
+            </Button>
+          </li>
+          <li className="flex justify-center">
+            <Button variant="link" asChild className="p-6">
+              <Link
+                to="/tags"
+                activeProps={activeLinkProps}
+                className="block size-fit"
+              >
+                <LucideTag />
               </Link>
             </Button>
           </li>

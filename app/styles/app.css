@@ -32,6 +32,7 @@
 
     /* Design system colors */
     --ds-neutral-800: 231 16% 16%;
+    --ds-neutral-900: 230 19% 12%;
   }
 
   .dark {

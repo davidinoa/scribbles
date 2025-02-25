@@ -14,10 +14,12 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as SignInImport } from './routes/sign-in'
 import { Route as LayoutImport } from './routes/_layout'
 import { Route as LayoutIndexImport } from './routes/_layout/index'
+import { Route as LayoutTagsImport } from './routes/_layout/tags'
 import { Route as LayoutSettingsImport } from './routes/_layout/settings'
 import { Route as LayoutNotesImport } from './routes/_layout/notes'
 import { Route as LayoutArchiveImport } from './routes/_layout/archive'
 import { Route as LayoutNotesIndexImport } from './routes/_layout/notes.index'
+import { Route as LayoutTagsTagNameImport } from './routes/_layout/tags_.$tagName'
 import { Route as LayoutSettingsPasswordImport } from './routes/_layout/settings_.password'
 import { Route as LayoutSettingsFontImport } from './routes/_layout/settings_.font'
 import { Route as LayoutSettingsAppearanceImport } from './routes/_layout/settings_.appearance'
@@ -39,6 +41,12 @@ const LayoutRoute = LayoutImport.update({
 const LayoutIndexRoute = LayoutIndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+const LayoutTagsRoute = LayoutTagsImport.update({
+  id: '/tags',
+  path: '/tags',
   getParentRoute: () => LayoutRoute,
 } as any)
 
@@ -64,6 +72,12 @@ const LayoutNotesIndexRoute = LayoutNotesIndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => LayoutNotesRoute,
+} as any)
+
+const LayoutTagsTagNameRoute = LayoutTagsTagNameImport.update({
+  id: '/tags_/$tagName',
+  path: '/tags/$tagName',
+  getParentRoute: () => LayoutRoute,
 } as any)
 
 const LayoutSettingsPasswordRoute = LayoutSettingsPasswordImport.update({
@@ -129,6 +143,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutSettingsImport
       parentRoute: typeof LayoutImport
     }
+    '/_layout/tags': {
+      id: '/_layout/tags'
+      path: '/tags'
+      fullPath: '/tags'
+      preLoaderRoute: typeof LayoutTagsImport
+      parentRoute: typeof LayoutImport
+    }
     '/_layout/': {
       id: '/_layout/'
       path: '/'
@@ -164,6 +185,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutSettingsPasswordImport
       parentRoute: typeof LayoutImport
     }
+    '/_layout/tags_/$tagName': {
+      id: '/_layout/tags_/$tagName'
+      path: '/tags/$tagName'
+      fullPath: '/tags/$tagName'
+      preLoaderRoute: typeof LayoutTagsTagNameImport
+      parentRoute: typeof LayoutImport
+    }
     '/_layout/notes/': {
       id: '/_layout/notes/'
       path: '/'
@@ -192,22 +220,26 @@ interface LayoutRouteChildren {
   LayoutArchiveRoute: typeof LayoutArchiveRoute
   LayoutNotesRoute: typeof LayoutNotesRouteWithChildren
   LayoutSettingsRoute: typeof LayoutSettingsRoute
+  LayoutTagsRoute: typeof LayoutTagsRoute
   LayoutIndexRoute: typeof LayoutIndexRoute
   LayoutNotesNoteIdRoute: typeof LayoutNotesNoteIdRoute
   LayoutSettingsAppearanceRoute: typeof LayoutSettingsAppearanceRoute
   LayoutSettingsFontRoute: typeof LayoutSettingsFontRoute
   LayoutSettingsPasswordRoute: typeof LayoutSettingsPasswordRoute
+  LayoutTagsTagNameRoute: typeof LayoutTagsTagNameRoute
 }
 
 const LayoutRouteChildren: LayoutRouteChildren = {
   LayoutArchiveRoute: LayoutArchiveRoute,
   LayoutNotesRoute: LayoutNotesRouteWithChildren,
   LayoutSettingsRoute: LayoutSettingsRoute,
+  LayoutTagsRoute: LayoutTagsRoute,
   LayoutIndexRoute: LayoutIndexRoute,
   LayoutNotesNoteIdRoute: LayoutNotesNoteIdRoute,
   LayoutSettingsAppearanceRoute: LayoutSettingsAppearanceRoute,
   LayoutSettingsFontRoute: LayoutSettingsFontRoute,
   LayoutSettingsPasswordRoute: LayoutSettingsPasswordRoute,
+  LayoutTagsTagNameRoute: LayoutTagsTagNameRoute,
 }
 
 const LayoutRouteWithChildren =
@@ -219,11 +251,13 @@ export interface FileRoutesByFullPath {
   '/archive': typeof LayoutArchiveRoute
   '/notes': typeof LayoutNotesRouteWithChildren
   '/settings': typeof LayoutSettingsRoute
+  '/tags': typeof LayoutTagsRoute
   '/': typeof LayoutIndexRoute
   '/notes/$noteId': typeof LayoutNotesNoteIdRoute
   '/settings/appearance': typeof LayoutSettingsAppearanceRoute
   '/settings/font': typeof LayoutSettingsFontRoute
   '/settings/password': typeof LayoutSettingsPasswordRoute
+  '/tags/$tagName': typeof LayoutTagsTagNameRoute
   '/notes/': typeof LayoutNotesIndexRoute
 }
 
@@ -231,11 +265,13 @@ export interface FileRoutesByTo {
   '/sign-in': typeof SignInRoute
   '/archive': typeof LayoutArchiveRoute
   '/settings': typeof LayoutSettingsRoute
+  '/tags': typeof LayoutTagsRoute
   '/': typeof LayoutIndexRoute
   '/notes/$noteId': typeof LayoutNotesNoteIdRoute
   '/settings/appearance': typeof LayoutSettingsAppearanceRoute
   '/settings/font': typeof LayoutSettingsFontRoute
   '/settings/password': typeof LayoutSettingsPasswordRoute
+  '/tags/$tagName': typeof LayoutTagsTagNameRoute
   '/notes': typeof LayoutNotesIndexRoute
 }
 
@@ -246,11 +282,13 @@ export interface FileRoutesById {
   '/_layout/archive': typeof LayoutArchiveRoute
   '/_layout/notes': typeof LayoutNotesRouteWithChildren
   '/_layout/settings': typeof LayoutSettingsRoute
+  '/_layout/tags': typeof LayoutTagsRoute
   '/_layout/': typeof LayoutIndexRoute
   '/_layout/notes_/$noteId': typeof LayoutNotesNoteIdRoute
   '/_layout/settings_/appearance': typeof LayoutSettingsAppearanceRoute
   '/_layout/settings_/font': typeof LayoutSettingsFontRoute
   '/_layout/settings_/password': typeof LayoutSettingsPasswordRoute
+  '/_layout/tags_/$tagName': typeof LayoutTagsTagNameRoute
   '/_layout/notes/': typeof LayoutNotesIndexRoute
 }
 
@@ -262,22 +300,26 @@ export interface FileRouteTypes {
     | '/archive'
     | '/notes'
     | '/settings'
+    | '/tags'
     | '/'
     | '/notes/$noteId'
     | '/settings/appearance'
     | '/settings/font'
     | '/settings/password'
+    | '/tags/$tagName'
     | '/notes/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/sign-in'
     | '/archive'
     | '/settings'
+    | '/tags'
     | '/'
     | '/notes/$noteId'
     | '/settings/appearance'
     | '/settings/font'
     | '/settings/password'
+    | '/tags/$tagName'
     | '/notes'
   id:
     | '__root__'
@@ -286,11 +328,13 @@ export interface FileRouteTypes {
     | '/_layout/archive'
     | '/_layout/notes'
     | '/_layout/settings'
+    | '/_layout/tags'
     | '/_layout/'
     | '/_layout/notes_/$noteId'
     | '/_layout/settings_/appearance'
     | '/_layout/settings_/font'
     | '/_layout/settings_/password'
+    | '/_layout/tags_/$tagName'
     | '/_layout/notes/'
   fileRoutesById: FileRoutesById
 }
@@ -325,11 +369,13 @@ export const routeTree = rootRoute
         "/_layout/archive",
         "/_layout/notes",
         "/_layout/settings",
+        "/_layout/tags",
         "/_layout/",
         "/_layout/notes_/$noteId",
         "/_layout/settings_/appearance",
         "/_layout/settings_/font",
-        "/_layout/settings_/password"
+        "/_layout/settings_/password",
+        "/_layout/tags_/$tagName"
       ]
     },
     "/sign-in": {
@@ -350,6 +396,10 @@ export const routeTree = rootRoute
       "filePath": "_layout/settings.tsx",
       "parent": "/_layout"
     },
+    "/_layout/tags": {
+      "filePath": "_layout/tags.tsx",
+      "parent": "/_layout"
+    },
     "/_layout/": {
       "filePath": "_layout/index.tsx",
       "parent": "/_layout"
@@ -368,6 +418,10 @@ export const routeTree = rootRoute
     },
     "/_layout/settings_/password": {
       "filePath": "_layout/settings_.password.tsx",
+      "parent": "/_layout"
+    },
+    "/_layout/tags_/$tagName": {
+      "filePath": "_layout/tags_.$tagName.tsx",
       "parent": "/_layout"
     },
     "/_layout/notes/": {
