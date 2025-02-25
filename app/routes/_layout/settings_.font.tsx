@@ -14,18 +14,18 @@ function FontSettings() {
   ]
 
   return (
-    <div className="container max-w-2xl py-8 mx-auto">
+    <div className="container max-w-2xl py-6 mx-auto">
       <BackButton to="/settings" />
 
-      <h2 className="mb-8 text-3xl font-bold tracking-tight">Font Theme</h2>
+      <h2 className="mb-6 text-2xl font-semibold">Font Theme</h2>
 
-      <div className="space-y-4">
+      <div className="space-y-3 rounded-lg border border-border bg-card p-4">
         {fonts.map((font) => (
           <Button
             key={font.name}
             variant="outline"
             size="lg"
-            className={`w-full justify-start gap-3 px-4 py-6 ${font.className}`}
+            className={`w-full justify-start gap-3 px-4 py-4 text-base ${font.className}`}
           >
             {font.name}
           </Button>

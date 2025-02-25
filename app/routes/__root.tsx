@@ -13,6 +13,7 @@ import { ClerkProvider } from '@clerk/tanstack-start'
 import { createServerFn } from '@tanstack/start'
 import { getAuth } from '@clerk/tanstack-start/server'
 import { getWebRequest } from '@tanstack/start/server'
+import { ThemeProvider } from '../contexts/theme-context'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -96,13 +97,34 @@ function RootComponent() {
 function RootDocument({ children }: { children: React.ReactNode }) {
   const isDev = import.meta.env.DEV
   return (
-    <html className="dark">
+    <html>
       <head>
         <HeadContent />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var theme = localStorage.getItem('theme');
+                  var root = document.documentElement;
+                  if (theme === 'dark') {
+                    root.classList.add('dark');
+                  } else if (theme === 'light') {
+                    root.classList.remove('dark');
+                  }
+                } catch (e) {
+                  console.error('Error applying theme:', e);
+                }
+              })();
+            `,
+          }}
+        />
       </head>
       <body suppressHydrationWarning>
-        {children}
-        {isDev && <TanStackRouterDevtools position="bottom-right" />}
+        <ThemeProvider>
+          {children}
+          {isDev && <TanStackRouterDevtools position="bottom-right" />}
+        </ThemeProvider>
         <Scripts />
       </body>
     </html>
