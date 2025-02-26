@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import { Button } from './button'
+import { Button } from '~/components/ui/button'
 import { ChevronLeft } from 'lucide-react'
 
 interface BackButtonProps {

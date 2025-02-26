@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Link } from '@tanstack/react-router'
-import { Button } from '../../components/ui/button'
+import { Button } from '~/components/ui/button'
 import { Sun, Type } from 'lucide-react'
 
 export const Route = createFileRoute('/_layout/settings')({

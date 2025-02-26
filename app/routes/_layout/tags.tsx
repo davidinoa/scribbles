@@ -1,10 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Button } from '~/components/ui/button'
 import { LucideHash, LucidePlus } from 'lucide-react'
-import { db } from '~/db'
-import { notesToTags, tags } from '~/db/schema'
-import { sql } from 'drizzle-orm'
-import { createServerFn } from '@tanstack/start'
 import { fetchTags } from '~/lib/server-fns/fetch-tags'
 import { EmptyState } from '~/components/empty-state'
 

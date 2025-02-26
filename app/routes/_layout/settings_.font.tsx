@@ -1,8 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Button } from '../../components/ui/button'
-import { BackButton } from '../../components/ui/back-button'
-import { useTheme } from '../../contexts/theme-context'
-import type { FontTheme } from '../../contexts/theme-context'
+import { Button } from '~/components/ui/button'
+import { BackButton } from '~/components/back-button'
+import { useTheme } from '~/contexts/theme-context'
+import type { FontTheme } from '~/contexts/theme-context'
 
 export const Route = createFileRoute('/_layout/settings_/font')({
   component: FontSettings,

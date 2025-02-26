@@ -1,6 +1,4 @@
-import React from 'react'
-
-interface EmptyStateProps {
+type EmptyStateProps = {
   title?: string
   message?: string
   filterActive?: boolean

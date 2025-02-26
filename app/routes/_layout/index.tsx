@@ -3,7 +3,6 @@ import { createServerFn } from '@tanstack/start'
 import { NoteEditor } from '~/components/note-editor'
 import { getWebRequest } from 'vinxi/http'
 import { getAuth } from '@clerk/tanstack-start/server'
-import { z } from 'zod'
 
 export const Route = createFileRoute('/_layout/')({
   component: Home,
