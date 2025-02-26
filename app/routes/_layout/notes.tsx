@@ -6,6 +6,7 @@ import {
 import { z } from 'zod'
 import { NoteCard } from '~/components/note-card'
 import { Input } from '~/components/ui/input'
+import { EmptyState } from '~/components/empty-state'
 import { fetchNotes } from '~/utils/notes'
 import { useState, useEffect } from 'react'
 
@@ -59,11 +60,20 @@ function NotesPage() {
         value={filterDraft}
         onChange={(e) => setFilterDraft(e.target.value)}
       />
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {notes.map((note) => (
-          <NoteCard key={note.id} note={note} />
-        ))}
-      </div>
+      {notes.length > 0 ? (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {notes.map((note) => (
+            <NoteCard key={note.id} note={note} />
+          ))}
+        </div>
+      ) : (
+        <EmptyState
+          title="No notes found"
+          filterActive={!!search.filterBy}
+          filterMessage="No notes match your search criteria. Try a different search term."
+          defaultMessage="You haven't created any notes yet. Start by creating your first note."
+        />
+      )}
     </div>
   )
 }

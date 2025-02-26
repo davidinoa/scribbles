@@ -8,7 +8,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import { demoLogin } from '~/lib/server-fns/demo-login'
 import { Button } from '~/components/ui/button'
-import { Spinner } from '~/components/ui/spinner'
+import { Spinner } from '~/components/spinner'
 
 export const Route = createFileRoute('/sign-in')({
   component: RouteComponent,

@@ -6,6 +6,7 @@ import { notesToTags, tags } from '~/db/schema'
 import { sql } from 'drizzle-orm'
 import { createServerFn } from '@tanstack/start'
 import { fetchTags } from '~/lib/server-fns/fetch-tags'
+import { EmptyState } from '~/components/empty-state'
 
 export const Route = createFileRoute('/_layout/tags')({
   loader: async () => {
@@ -29,8 +30,11 @@ function RouteComponent() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {tags.length === 0 ? (
-          <div className="col-span-full text-center text-muted-foreground">
-            No tags yet. Create your first tag to get started!
+          <div className="col-span-full">
+            <EmptyState
+              title="No tags found"
+              defaultMessage="You haven't created any tags yet. Create your first tag to get started!"
+            />
           </div>
         ) : (
           tags.map((tag) => (
