@@ -8,10 +8,11 @@
     "dev": "vinxi dev",
     "build": "vinxi build",
     "start": "vinxi start",
-    "db:generate": "drizzle-kit generate:pg",
+    "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "db:seed": "tsx app/db/scripts/seed.ts"
+    "db:seed": "tsx app/db/scripts/seed.ts",
+    "db:clear": "tsx app/db/scripts/clear-user-data.ts"
   },
   "keywords": [],
   "author": "",
