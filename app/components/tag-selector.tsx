@@ -1,4 +1,4 @@
-import { Check, ChevronsUpDown, GripVertical, Plus, X } from 'lucide-react'
+import { Check, Plus, X } from 'lucide-react'
 import { cn } from '~/lib/utils'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
@@ -20,7 +20,6 @@ import { fetchTagOptions } from '~/lib/server-fns/fetch-tag-options'
 import { createTag } from '~/lib/server-fns/create-tag'
 
 type TagSelectorProps = {
-  tags?: { value: string; label: string }[]
   placeholder?: string
   emptyMessage?: string
   onChange?: (values: string[]) => void
@@ -29,7 +28,6 @@ type TagSelectorProps = {
 }
 
 export function TagSelector({
-  tags: propTags,
   placeholder = 'Search for an option...',
   emptyMessage = 'No tags found.',
   onChange,
@@ -39,14 +37,11 @@ export function TagSelector({
   const [open, setOpen] = useState(false)
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [inputValue, setInputValue] = useState('')
-  const [tags, setTags] = useState<{ value: string; label: string }[]>(
-    propTags || [],
-  )
-  const [isLoading, setIsLoading] = useState(!propTags)
+  const [tags, setTags] = useState<{ value: string; label: string }[]>([])
+  const [isLoading, setIsLoading] = useState(false)
 
   // Fetch tags from the database when the component mounts
   useEffect(() => {
-    if (propTags) return
     const loadTags = async () => {
       try {
         setIsLoading(true)
@@ -60,14 +55,7 @@ export function TagSelector({
       }
     }
     loadTags()
-  }, [propTags])
-
-  // Update local tags state if prop tags change
-  useEffect(() => {
-    if (propTags) {
-      setTags(propTags)
-    }
-  }, [propTags])
+  }, [])
 
   const handleSelect = useCallback(
     (value: string) => {
@@ -152,14 +140,14 @@ export function TagSelector({
     )
 
   return (
-    <div className="w-full">
+    <div>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="w-full justify-between h-auto min-h-10 p-0 border-none"
+            className="w-full justify-between h-auto min-h-10 p-0 border-none shadow-none"
           >
             <div className="flex flex-wrap gap-1 py-1">
               {selectedTags.length > 0 ? (
@@ -215,10 +203,7 @@ export function TagSelector({
                         value={tag.value}
                         onSelect={handleSelect}
                       >
-                        <div className="flex items-center">
-                          <GripVertical className="mr-2 h-4 w-4 text-muted-foreground" />
-                          {tag.label}
-                        </div>
+                        {tag.label}
                         <Check
                           className={cn(
                             'ml-auto h-4 w-4',
