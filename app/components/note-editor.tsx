@@ -4,14 +4,16 @@ import { useServerFn } from '@tanstack/start'
 import { cn } from '~/lib/utils'
 import { handleForm } from '~/lib/server-fns/handle-form'
 import { Button } from '~/components/ui/button'
-import { Input } from '~/components/ui/input'
 import { Textarea } from './ui/textarea'
-import { ArrowLeft, LucideClock } from 'lucide-react'
+import { LucideClock, LucideTag } from 'lucide-react'
+import { TagSelector } from './tag-selector'
+import { Label } from './ui/label'
 
 const formOpts = formOptions({
   defaultValues: {
     title: '',
     content: '',
+    tags: [] as string[],
   },
 })
 
@@ -25,6 +27,7 @@ export function NoteEditor() {
       const formData = new FormData()
       formData.append('title', data.value.title)
       formData.append('content', data.value.content)
+      formData.append('tags', data.value.tags.join(','))
       await handleFormFn({ data: formData }).then(() => {
         router.navigate({ to: '/notes' })
       })
@@ -96,7 +99,7 @@ export function NoteEditor() {
                 id="title"
                 name="title"
                 className={cn(
-                  'text-3xl font-bold border-none placeholder:text-muted-foreground/50 focus-visible:ring-0 focus-visible:shadow-none shadow-none px-0 text-foreground bg-transparent [field-sizing:content]',
+                  'text-3xl font-bold border-none placeholder:text-muted-foreground/50 focus-visible:ring-0 focus-visible:shadow-none shadow-none px-0 text-foreground bg-transparent [field-sizing:content] resize-none md:text-3xl',
                   field.state.meta.errors.length > 0 && 'border-destructive',
                 )}
                 value={field.state.value}
@@ -120,10 +123,26 @@ export function NoteEditor() {
         }}
       </form.Field>
 
-      {/* Last edited timestamp */}
-      <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-6">
-        <LucideClock className="size-4" />
-        <span>Not yet saved</span>
+      <div className="grid grid-cols-[auto_1fr] items-center gap-x-6 gap-y-4 text-muted-foreground mb-6">
+        {/* Tag selector */}
+        <Label htmlFor="tags" className="flex items-center gap-2">
+          <LucideTag className="size-4" />
+          Tags
+        </Label>
+        <form.Field name="tags">
+          {(field) => <TagSelector onChange={field.handleChange} />}
+        </form.Field>
+
+        {/* Last edited timestamp */}
+        <Label htmlFor="last-edited" className="flex items-center gap-2">
+          <div className="flex items-center gap-2 w-fit">
+            <LucideClock className="size-4" />
+            <p className="whitespace-nowrap">Last edited</p>
+          </div>
+        </Label>
+        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+          <span>Not yet saved</span>
+        </div>
       </div>
 
       {/* Content field */}
@@ -143,7 +162,7 @@ export function NoteEditor() {
                 id="content"
                 name="content"
                 className={cn(
-                  'w-full [field-sizing:content] resize-none border-none bg-transparent placeholder:text-muted-foreground/50 focus-visible:ring-0 focus-visible:shadow-none shadow-none text-foreground',
+                  'w-full [field-sizing:content] resize-none border-none bg-transparent placeholder:text-muted-foreground/50 focus-visible:ring-0 focus-visible:shadow-none shadow-none text-foreground p-0',
                   field.state.meta.errors.length > 0 && 'border-destructive',
                 )}
                 value={field.state.value}

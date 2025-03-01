@@ -4,7 +4,7 @@ import { setResponseStatus } from '@tanstack/start/server'
 import { getAuth } from '@clerk/tanstack-start/server'
 import { getWebRequest } from '@tanstack/start/server'
 import { db } from '~/db'
-import { notes } from '~/db/schema'
+import { notes, notesToTags, tags } from '~/db/schema'
 import { serverValidate } from '~/utils/editor'
 
 export const handleForm = createServerFn({ method: 'POST' })
@@ -25,12 +25,34 @@ export const handleForm = createServerFn({ method: 'POST' })
         return 'Unauthorized'
       }
 
-      await db.insert(notes).values({
-        title: formData.title as string,
-        content: formData.content as string,
-        isArchived: false,
-        userId,
-      })
+      // Insert the note and get the ID
+      const [note] = await db
+        .insert(notes)
+        .values({
+          title: formData.title as string,
+          content: formData.content as string,
+          isArchived: false,
+          userId,
+        })
+        .returning({ id: notes.id })
+
+      // Handle tags if they exist
+      const tagsString = formData.tags as string
+      if (tagsString && tagsString.length > 0) {
+        const tagIds = tagsString.split(',').filter(Boolean)
+
+        // Insert each tag association
+        if (tagIds.length > 0) {
+          const tagValues = tagIds.map((tagId) => ({
+            noteId: note.id,
+            tagId,
+          }))
+
+          await db.insert(notesToTags).values(tagValues)
+        }
+      }
+
+      return { success: true, noteId: note.id }
     } catch (e) {
       if (e instanceof ServerValidateError) return e.response
       console.error(e)

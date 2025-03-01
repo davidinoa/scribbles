@@ -58,7 +58,7 @@ export const Route = createRootRoute({
       {
         rel: 'preconnect',
         href: 'https://fonts.gstatic.com',
-        crossorigin: true,
+        crossOrigin: 'anonymous',
       },
       {
         rel: 'stylesheet',
@@ -97,7 +97,7 @@ function RootComponent() {
 function RootDocument({ children }: { children: React.ReactNode }) {
   const isDev = import.meta.env.DEV
   return (
-    <html>
+    <html suppressHydrationWarning>
       <head>
         <HeadContent />
         <script
