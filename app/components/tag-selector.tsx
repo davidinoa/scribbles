@@ -15,70 +15,46 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '~/components/ui/popover'
-import { useCallback, useState, useEffect } from 'react'
+import { useCallback, useState } from 'react'
 import { fetchTagOptions } from '~/lib/server-fns/fetch-tag-options'
 import { createTag } from '~/lib/server-fns/create-tag'
+import { useQuery } from '@tanstack/react-query'
 
 type TagSelectorProps = {
   placeholder?: string
   emptyMessage?: string
   onChange?: (values: string[]) => void
-  maxTags?: number
-  allowCreation?: boolean
 }
 
 export function TagSelector({
   placeholder = 'Search for an option...',
   emptyMessage = 'No tags found.',
   onChange,
-  maxTags,
-  allowCreation = true,
 }: TagSelectorProps) {
   const [open, setOpen] = useState(false)
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [inputValue, setInputValue] = useState('')
-  const [tags, setTags] = useState<{ value: string; label: string }[]>([])
-  const [isLoading, setIsLoading] = useState(false)
 
-  // Fetch tags from the database when the component mounts
-  useEffect(() => {
-    const loadTags = async () => {
-      try {
-        setIsLoading(true)
-        const fetchedTags = await fetchTagOptions()
-        setTags(fetchedTags.length > 0 ? fetchedTags : [])
-      } catch (error) {
-        console.error('Error fetching tags:', error)
-        setTags([])
-      } finally {
-        setIsLoading(false)
-      }
-    }
-    loadTags()
-  }, [])
+  const tagsQuery = useQuery({
+    queryKey: ['tags'],
+    queryFn: fetchTagOptions,
+  })
 
-  const handleSelect = useCallback(
-    (value: string) => {
-      setSelectedTags((prev) => {
-        if (prev.includes(value)) {
-          return prev.filter((item) => item !== value)
-        } else {
-          if (maxTags && prev.length >= maxTags) {
-            return prev
-          }
-          return [...prev, value]
-        }
-      })
-      setInputValue('')
-    },
-    [maxTags],
-  )
+  const tags = tagsQuery.data ?? []
+  const isLoading = tagsQuery.isLoading
+
+  const handleSelect = (value: string) => {
+    const newSelectedTags = selectedTags.includes(value)
+      ? selectedTags.filter((item) => item !== value)
+      : [...selectedTags, value]
+    setSelectedTags(newSelectedTags)
+    onChange?.(newSelectedTags)
+    setInputValue('')
+  }
 
   const handleCreateTag = useCallback(async () => {
     if (!inputValue.trim()) return
-
     try {
-      // Check if tag already exists in the current list
       const exists = tags.some(
         (tag) =>
           tag.value.toLowerCase() === inputValue.toLowerCase() ||
@@ -86,18 +62,13 @@ export function TagSelector({
       )
 
       if (!exists) {
-        // Create new tag in the database
         const newTag = await createTag({
           data: { name: inputValue.trim() },
         })
 
-        // Add the new tag to the local state
-        setTags((prevTags) => [...prevTags, newTag])
-
-        // Select the new tag
+        tagsQuery.refetch()
         handleSelect(newTag.value)
       } else {
-        // If tag exists, find and select it
         const existingTag = tags.find(
           (tag) =>
             tag.label.toLowerCase() === inputValue.toLowerCase() ||
@@ -116,13 +87,8 @@ export function TagSelector({
 
   const handleRemoveTag = useCallback((value: string) => {
     setSelectedTags((prev) => prev.filter((item) => item !== value))
+    onChange?.(selectedTags)
   }, [])
-
-  useEffect(() => {
-    if (onChange) {
-      onChange(selectedTags)
-    }
-  }, [selectedTags, onChange])
 
   const filteredTags = tags.filter(
     (tag) =>
@@ -131,7 +97,6 @@ export function TagSelector({
   )
 
   const showCreateButton =
-    allowCreation &&
     inputValue &&
     !filteredTags.some(
       (tag) =>
@@ -147,7 +112,7 @@ export function TagSelector({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="w-full justify-between h-auto min-h-10 p-0 border-none shadow-none"
+            className="h-auto min-h-10 w-full justify-between border-none p-0 shadow-none hover:bg-transparent focus:bg-transparent active:bg-transparent"
           >
             <div className="flex flex-wrap gap-1 py-1">
               {selectedTags.length > 0 ? (
@@ -157,11 +122,11 @@ export function TagSelector({
                     <Badge
                       key={value}
                       variant="secondary"
-                      className="mr-1 mb-1"
+                      className="mb-1 mr-1"
                     >
                       {tag?.label}
                       <button
-                        className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                        className="ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
                         onMouseDown={(e) => {
                           e.preventDefault()
                           e.stopPropagation()
@@ -219,7 +184,7 @@ export function TagSelector({
               )}
             </CommandList>
             {showCreateButton && (
-              <div className="px-2 py-2 border-t">
+              <div className="border-t px-2 py-2">
                 <Button
                   variant="outline"
                   size="sm"
