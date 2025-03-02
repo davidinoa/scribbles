@@ -5,7 +5,7 @@ import { cn } from '~/lib/utils'
 import { handleForm } from '~/lib/server-fns/handle-form'
 import { Button } from '~/components/ui/button'
 import { Textarea } from './ui/textarea'
-import { LucideClock, LucideTag } from 'lucide-react'
+import { LucideClock, LucideTag, LucideSave } from 'lucide-react'
 import { TagSelector } from './tag-selector'
 import { Label } from './ui/label'
 
@@ -45,8 +45,7 @@ export function NoteEditor() {
       }}
     >
       {/* Header section with save button */}
-      <div className="flex justify-between items-center mb-4">
-        <div></div> {/* Empty div for spacing */}
+      <div className="mb-6 flex items-center justify-end">
         <form.Subscribe
           selector={(formState) => [
             formState.canSubmit,
@@ -58,11 +57,14 @@ export function NoteEditor() {
               type="submit"
               disabled={!canSubmit}
               className={cn(
-                'bg-primary text-primary-foreground hover:bg-primary/90',
+                'bg-accent text-accent-foreground shadow-sm transition-all hover:bg-accent/90',
                 !canSubmit && 'opacity-50',
+                'gap-2 rounded-full px-4',
               )}
+              size="sm"
             >
-              {isSubmitting ? 'Saving...' : 'Save Note'}
+              <LucideSave className="size-3.5" />
+              {isSubmitting ? 'Saving...' : 'Save'}
             </Button>
           )}
         </form.Subscribe>
@@ -99,7 +101,7 @@ export function NoteEditor() {
                 id="title"
                 name="title"
                 className={cn(
-                  'text-3xl font-bold border-none placeholder:text-muted-foreground/50 focus-visible:ring-0 focus-visible:shadow-none shadow-none px-0 text-foreground bg-transparent [field-sizing:content] resize-none md:text-3xl',
+                  'resize-none border-none bg-transparent px-0 text-3xl font-bold text-foreground shadow-none [field-sizing:content] placeholder:text-muted-foreground/50 focus-visible:shadow-none focus-visible:ring-0 md:text-3xl',
                   field.state.meta.errors.length > 0 && 'border-destructive',
                 )}
                 value={field.state.value}
@@ -123,7 +125,7 @@ export function NoteEditor() {
         }}
       </form.Field>
 
-      <div className="grid grid-cols-[auto_1fr] items-center gap-x-6 gap-y-4 text-muted-foreground mb-6">
+      <div className="mb-6 grid grid-cols-[auto_1fr] items-center gap-x-6 gap-y-4 text-muted-foreground">
         {/* Tag selector */}
         <Label htmlFor="tags" className="flex items-center gap-2">
           <LucideTag className="size-4" />
@@ -135,7 +137,7 @@ export function NoteEditor() {
 
         {/* Last edited timestamp */}
         <Label htmlFor="last-edited" className="flex items-center gap-2">
-          <div className="flex items-center gap-2 w-fit">
+          <div className="flex w-fit items-center gap-2">
             <LucideClock className="size-4" />
             <p className="whitespace-nowrap">Last edited</p>
           </div>
@@ -162,7 +164,7 @@ export function NoteEditor() {
                 id="content"
                 name="content"
                 className={cn(
-                  'w-full [field-sizing:content] resize-none border-none bg-transparent placeholder:text-muted-foreground/50 focus-visible:ring-0 focus-visible:shadow-none shadow-none text-foreground p-0',
+                  'w-full resize-none border-none bg-transparent p-0 text-foreground shadow-none [field-sizing:content] placeholder:text-muted-foreground/50 focus-visible:shadow-none focus-visible:ring-0',
                   field.state.meta.errors.length > 0 && 'border-destructive',
                 )}
                 value={field.state.value}
