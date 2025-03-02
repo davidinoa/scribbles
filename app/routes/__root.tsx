@@ -2,9 +2,8 @@ import {
   HeadContent,
   Outlet,
   Scripts,
-  createRootRoute,
+  createRootRouteWithContext,
 } from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/router-devtools'
 import { DefaultCatchBoundary } from '../components/default-catch-boundary'
 import { NotFound } from '../components/not-found'
 import appCss from '../styles/app.css?url'
@@ -14,8 +13,11 @@ import { createServerFn } from '@tanstack/start'
 import { getAuth } from '@clerk/tanstack-start/server'
 import { getWebRequest } from '@tanstack/start/server'
 import { ThemeProvider } from '../contexts/theme-context'
-
-export const Route = createRootRoute({
+import type { QueryClient } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+export const Route = createRootRouteWithContext<{
+  queryClient: QueryClient
+}>()({
   head: () => ({
     meta: [
       {
@@ -95,7 +97,6 @@ function RootComponent() {
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
-  const isDev = import.meta.env.DEV
   return (
     <html suppressHydrationWarning>
       <head>
@@ -134,10 +135,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         />
       </head>
       <body suppressHydrationWarning>
-        <ThemeProvider>
-          {children}
-          {isDev && <TanStackRouterDevtools position="bottom-right" />}
-        </ThemeProvider>
+        <ThemeProvider>{children}</ThemeProvider>
+        <ReactQueryDevtools />
         <Scripts />
       </body>
     </html>
@@ -146,8 +145,5 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 
 const fetchClerkAuth = createServerFn({ method: 'GET' }).handler(async () => {
   const { userId } = await getAuth(getWebRequest()!)
-
-  return {
-    userId,
-  }
+  return { userId }
 })
