@@ -4,7 +4,7 @@ import { getAuth } from '@clerk/tanstack-start/server'
 import { getWebRequest } from '@tanstack/start/server'
 import { and, eq } from 'drizzle-orm'
 import { db } from '~/db'
-import { notes } from '~/db/schema'
+import { notes, notesToTags } from '~/db/schema'
 import { z } from 'zod'
 
 const fetchNotesParamsSchema = z
@@ -92,4 +92,57 @@ export const deleteNote = createServerFn({ method: 'POST' })
       .delete(notes)
       .where(and(eq(notes.id, noteId), eq(notes.userId, userId)))
     return { success: true }
+  })
+
+export const updateNote = createServerFn({ method: 'POST' })
+  .validator((data: unknown) => {
+    if (!(data instanceof FormData)) {
+      throw new Error('Invalid form data')
+    }
+    return data
+  })
+  .handler(async (ctx) => {
+    try {
+      const formData = Object.fromEntries(ctx.data.entries())
+      const { userId } = await getAuth(getWebRequest()!)
+      const noteId = formData.noteId as string
+
+      if (!userId) {
+        return { success: false, error: 'Unauthorized' }
+      }
+
+      // Update the note
+      await db
+        .update(notes)
+        .set({
+          title: formData.title as string,
+          content: formData.content as string,
+        })
+        .where(and(eq(notes.id, noteId), eq(notes.userId, userId)))
+
+      // Always handle tags, even if empty
+      // First delete existing tag associations
+      await db.delete(notesToTags).where(eq(notesToTags.noteId, noteId))
+
+      // Then add new tag associations if there are any
+      const tagsString = formData.tags as string
+      if (tagsString && tagsString.length > 0) {
+        const tagIds = tagsString.split(',').filter(Boolean)
+
+        // Insert each tag association
+        if (tagIds.length > 0) {
+          const tagValues = tagIds.map((tagId) => ({
+            noteId,
+            tagId,
+          }))
+
+          await db.insert(notesToTags).values(tagValues)
+        }
+      }
+
+      return { success: true, noteId }
+    } catch (e) {
+      console.error(e)
+      return { success: false, error: 'There was an internal error' }
+    }
   })

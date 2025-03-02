@@ -5,35 +5,142 @@ import { cn } from '~/lib/utils'
 import { handleForm } from '~/lib/server-fns/handle-form'
 import { Button } from '~/components/ui/button'
 import { Textarea } from './ui/textarea'
-import { LucideClock, LucideTag, LucideSave } from 'lucide-react'
+import {
+  LucideClock,
+  LucideTag,
+  LucideSave,
+  Archive,
+  Trash2,
+} from 'lucide-react'
 import { TagSelector } from './tag-selector'
 import { Label } from './ui/label'
+import { updateNote, deleteNote } from '~/utils/notes'
+import { format } from 'date-fns'
+import { useEffect, useState } from 'react'
+import { archiveNote } from '~/lib/server-fns/archive-note'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '~/components/ui/alert-dialog'
 
-const formOpts = formOptions({
-  defaultValues: {
-    title: '',
-    content: '',
-    tags: [] as string[],
-  },
-})
+const defaultFormValues = {
+  title: '',
+  content: '',
+  tags: [] as string[],
+}
 
-export function NoteEditor() {
+interface NoteEditorProps {
+  initialValues?: {
+    id: string
+    title: string
+    content: string
+    tags: string[]
+    updatedAt?: Date | string | null
+  }
+  onSuccess?: (noteId: string) => void
+}
+
+export function NoteEditor({ initialValues, onSuccess }: NoteEditorProps = {}) {
   const handleFormFn = useServerFn(handleForm)
+  const updateNoteFn = useServerFn(updateNote)
+  const deleteNoteFn = useServerFn(deleteNote)
+  const archiveNoteFn = useServerFn(archiveNote)
   const router = useRouter()
 
+  const [selectedTags, setSelectedTags] = useState<string[]>(
+    initialValues?.tags || [],
+  )
+
+  const isEditing = !!initialValues?.id
+
   const form = useForm({
-    ...formOpts,
+    defaultValues: initialValues
+      ? {
+          title: initialValues.title,
+          content: initialValues.content,
+          tags: initialValues.tags,
+        }
+      : defaultFormValues,
     onSubmit: async (data) => {
       const formData = new FormData()
       formData.append('title', data.value.title)
       formData.append('content', data.value.content)
       formData.append('tags', data.value.tags.join(','))
-      await handleFormFn({ data: formData }).then(() => {
-        router.navigate({ to: '/notes' })
-      })
+
+      if (isEditing && initialValues) {
+        // Update existing note
+        formData.append('noteId', initialValues.id)
+        const result = await updateNoteFn({ data: formData })
+
+        if (
+          typeof result === 'object' &&
+          'success' in result &&
+          result.success &&
+          onSuccess &&
+          'noteId' in result
+        ) {
+          onSuccess(result.noteId as string)
+        } else {
+          router.navigate({ to: '/notes' })
+        }
+      } else {
+        // Create new note
+        const result = await handleFormFn({ data: formData })
+
+        if (
+          typeof result === 'object' &&
+          'success' in result &&
+          result.success &&
+          onSuccess &&
+          'noteId' in result
+        ) {
+          onSuccess(result.noteId as string)
+        } else {
+          router.navigate({ to: '/notes' })
+        }
+      }
     },
   })
   const formErrors = useStore(form.store, (formState) => formState.errors)
+
+  // Update the form's tags field when selectedTags changes
+  useEffect(() => {
+    form.setFieldValue('tags', selectedTags)
+  }, [selectedTags, form])
+
+  // Initialize form with tags when component mounts
+  useEffect(() => {
+    if (initialValues?.tags && initialValues.tags.length > 0) {
+      setSelectedTags(initialValues.tags)
+    }
+  }, [initialValues])
+
+  const handleTagsChange = (tags: string[]) => {
+    setSelectedTags(tags)
+    // Directly update the form value to ensure it's in sync
+    form.setFieldValue('tags', tags)
+  }
+
+  const handleDelete = async () => {
+    if (isEditing && initialValues) {
+      await deleteNoteFn({ data: initialValues.id })
+      router.navigate({ to: '/notes' })
+    }
+  }
+
+  const handleArchive = async () => {
+    if (isEditing && initialValues) {
+      await archiveNoteFn({ data: initialValues.id })
+      router.navigate({ to: '/notes' })
+    }
+  }
 
   return (
     <form
@@ -45,29 +152,81 @@ export function NoteEditor() {
       }}
     >
       {/* Header section with save button */}
-      <div className="mb-6 flex items-center justify-end">
-        <form.Subscribe
-          selector={(formState) => [
-            formState.canSubmit,
-            formState.isSubmitting,
-          ]}
-        >
-          {([canSubmit, isSubmitting]) => (
-            <Button
-              type="submit"
-              disabled={!canSubmit}
-              className={cn(
-                'bg-accent text-accent-foreground shadow-sm transition-all hover:bg-accent/90',
-                !canSubmit && 'opacity-50',
-                'gap-2 rounded-full px-4',
-              )}
-              size="sm"
-            >
-              <LucideSave className="size-3.5" />
-              {isSubmitting ? 'Saving...' : 'Save'}
-            </Button>
-          )}
-        </form.Subscribe>
+      <div className="mb-6 flex items-center justify-between">
+        {isEditing && (
+          <div className="flex gap-2">
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline" className="gap-2" size="sm">
+                  <Archive className="h-4 w-4" />
+                  Archive
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Archive this note?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This note will be moved to your archives. You can restore it
+                    later.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleArchive}>
+                    Archive
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" className="gap-2" size="sm">
+                  <Trash2 className="h-4 w-4" />
+                  Delete
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete
+                    your note.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDelete}>
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        )}
+        <div className={isEditing ? '' : 'ml-auto'}>
+          <form.Subscribe
+            selector={(formState) => [
+              formState.canSubmit,
+              formState.isSubmitting,
+            ]}
+          >
+            {([canSubmit, isSubmitting]) => (
+              <Button
+                type="submit"
+                disabled={!canSubmit}
+                className={cn(
+                  'bg-accent text-accent-foreground shadow-sm transition-all hover:bg-accent/90',
+                  !canSubmit && 'opacity-50',
+                  'gap-2 rounded-full px-4',
+                )}
+                size="sm"
+              >
+                <LucideSave className="size-3.5" />
+                {isSubmitting ? 'Saving...' : 'Save'}
+              </Button>
+            )}
+          </form.Subscribe>
+        </div>
       </div>
 
       {/* Error messages */}
@@ -131,9 +290,10 @@ export function NoteEditor() {
           <LucideTag className="size-4" />
           Tags
         </Label>
-        <form.Field name="tags">
-          {(field) => <TagSelector onChange={field.handleChange} />}
-        </form.Field>
+        <TagSelector
+          onChange={handleTagsChange}
+          initialSelectedTags={selectedTags}
+        />
 
         {/* Last edited timestamp */}
         <Label htmlFor="last-edited" className="flex items-center gap-2">
@@ -143,7 +303,11 @@ export function NoteEditor() {
           </div>
         </Label>
         <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-          <span>Not yet saved</span>
+          <span>
+            {initialValues?.updatedAt
+              ? format(new Date(initialValues.updatedAt), 'PPP')
+              : 'Not yet saved'}
+          </span>
         </div>
       </div>
 
