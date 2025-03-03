@@ -108,17 +108,11 @@ export function TagSelector({
     setInputValue('')
   }, [inputValue, tags, handleSelect])
 
-  const handleRemoveTag = useCallback(
-    (value: string) => {
-      const newSelectedTags = selectedTags.filter((item) => item !== value)
-      setSelectedTags(newSelectedTags)
-      // Ensure the onChange callback is called with the updated tags
-      if (onChange) {
-        onChange(newSelectedTags)
-      }
-    },
-    [selectedTags, onChange],
-  )
+  const handleRemoveTag = (value: string) => {
+    const newSelectedTags = selectedTags.filter((item) => item !== value)
+    setSelectedTags(newSelectedTags)
+    onChange?.(newSelectedTags)
+  }
 
   const filteredTags = tags.filter(
     (tag) =>
@@ -157,11 +151,10 @@ export function TagSelector({
                       {tag?.label || value}
                       <button
                         className="ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                        onMouseDown={(e) => {
-                          e.preventDefault()
+                        onClick={(e) => {
                           e.stopPropagation()
+                          handleRemoveTag(value)
                         }}
-                        onClick={() => handleRemoveTag(value)}
                       >
                         <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
                       </button>

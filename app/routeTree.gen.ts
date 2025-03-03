@@ -12,6 +12,7 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as SignInImport } from './routes/sign-in'
+import { Route as PlaygroundImport } from './routes/playground'
 import { Route as LayoutImport } from './routes/_layout'
 import { Route as LayoutIndexImport } from './routes/_layout/index'
 import { Route as LayoutTagsImport } from './routes/_layout/tags'
@@ -29,6 +30,12 @@ import { Route as LayoutNotesNoteIdImport } from './routes/_layout/notes_.$noteI
 const SignInRoute = SignInImport.update({
   id: '/sign-in',
   path: '/sign-in',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const PlaygroundRoute = PlaygroundImport.update({
+  id: '/playground',
+  path: '/playground',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -106,6 +113,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: ''
       preLoaderRoute: typeof LayoutImport
+      parentRoute: typeof rootRoute
+    }
+    '/playground': {
+      id: '/playground'
+      path: '/playground'
+      fullPath: '/playground'
+      preLoaderRoute: typeof PlaygroundImport
       parentRoute: typeof rootRoute
     }
     '/sign-in': {
@@ -231,6 +245,7 @@ const LayoutRouteWithChildren =
 
 export interface FileRoutesByFullPath {
   '': typeof LayoutRouteWithChildren
+  '/playground': typeof PlaygroundRoute
   '/sign-in': typeof SignInRoute
   '/archive': typeof LayoutArchiveRoute
   '/notes': typeof LayoutNotesRouteWithChildren
@@ -245,6 +260,7 @@ export interface FileRoutesByFullPath {
 }
 
 export interface FileRoutesByTo {
+  '/playground': typeof PlaygroundRoute
   '/sign-in': typeof SignInRoute
   '/archive': typeof LayoutArchiveRoute
   '/settings': typeof LayoutSettingsRoute
@@ -260,6 +276,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_layout': typeof LayoutRouteWithChildren
+  '/playground': typeof PlaygroundRoute
   '/sign-in': typeof SignInRoute
   '/_layout/archive': typeof LayoutArchiveRoute
   '/_layout/notes': typeof LayoutNotesRouteWithChildren
@@ -277,6 +294,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | ''
+    | '/playground'
     | '/sign-in'
     | '/archive'
     | '/notes'
@@ -290,6 +308,7 @@ export interface FileRouteTypes {
     | '/notes/'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/playground'
     | '/sign-in'
     | '/archive'
     | '/settings'
@@ -303,6 +322,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_layout'
+    | '/playground'
     | '/sign-in'
     | '/_layout/archive'
     | '/_layout/notes'
@@ -319,11 +339,13 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   LayoutRoute: typeof LayoutRouteWithChildren
+  PlaygroundRoute: typeof PlaygroundRoute
   SignInRoute: typeof SignInRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   LayoutRoute: LayoutRouteWithChildren,
+  PlaygroundRoute: PlaygroundRoute,
   SignInRoute: SignInRoute,
 }
 
@@ -338,6 +360,7 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/_layout",
+        "/playground",
         "/sign-in"
       ]
     },
@@ -354,6 +377,9 @@ export const routeTree = rootRoute
         "/_layout/settings_/font",
         "/_layout/tags_/$tagName"
       ]
+    },
+    "/playground": {
+      "filePath": "playground.tsx"
     },
     "/sign-in": {
       "filePath": "sign-in.tsx"
