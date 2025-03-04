@@ -11,6 +11,32 @@ export default {
         sm: 'calc(var(--radius) - 4px)',
       },
       colors: {
+        'ds-neutral': {
+          50: 'hsl(var(--ds-neutral-50))',
+          100: 'hsl(var(--ds-neutral-100))',
+          200: 'hsl(var(--ds-neutral-200))',
+          300: 'hsl(var(--ds-neutral-300))',
+          400: 'hsl(var(--ds-neutral-400))',
+          500: 'hsl(var(--ds-neutral-500))',
+          600: 'hsl(var(--ds-neutral-600))',
+          700: 'hsl(var(--ds-neutral-700))',
+          800: 'hsl(var(--ds-neutral-800))',
+          900: 'hsl(var(--ds-neutral-900))',
+          950: 'hsl(var(--ds-neutral-950))',
+        },
+        'ds-blue': {
+          50: 'hsl(var(--ds-blue-50))',
+          500: 'hsl(var(--ds-blue-500))',
+          700: 'hsl(var(--ds-blue-700))',
+        },
+        'ds-green': {
+          100: 'hsl(var(--ds-green-100))',
+          500: 'hsl(var(--ds-green-500))',
+        },
+        'ds-red': {
+          100: 'hsl(var(--ds-red-100))',
+          500: 'hsl(var(--ds-red-500))',
+        },
         'ds-accent': {
           DEFAULT: 'hsl(var(--ds-accent-500))',
         },

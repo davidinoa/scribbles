@@ -38,10 +38,29 @@
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
 
-    /* Design system colors */
-    --ds-neutral-800: 220 14% 96%;
-    --ds-neutral-900: 220 13% 91%;
-    --ds-accent-500: 228 100% 60%;
+    /* Design System Colors - Neutral */
+    --ds-neutral-950: 222 32% 8%;
+    --ds-neutral-900: 230 19% 12%;
+    --ds-neutral-800: 231 16% 16%;
+    --ds-neutral-700: 221 16% 20%;
+    --ds-neutral-600: 222 11% 36%;
+    --ds-neutral-500: 221 8% 48%;
+    --ds-neutral-400: 220 11% 64%;
+    --ds-neutral-300: 219 15% 82%;
+    --ds-neutral-200: 216 19% 90%;
+    --ds-neutral-100: 216 28% 96%;
+    --ds-neutral-50: 216 33% 97%;
+    --ds-neutral-0: 0 0% 100%;
+    /* Design System Colors - Blue */
+    --ds-blue-700: 228 70% 48%;
+    --ds-blue-500: 228 100% 60%;
+    --ds-blue-50: 222 100% 96%;
+    /* Design System Colors - Green */
+    --ds-green-500: 148 71% 44%;
+    --ds-green-100: 154 84% 90%;
+    /* Design System Colors - Red */
+    --ds-red-500: 355 96% 60%;
+    --ds-red-100: 356 100% 92%;
   }
 
   .dark {
