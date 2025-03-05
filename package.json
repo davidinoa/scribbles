@@ -36,6 +36,7 @@
     "@tanstack/react-router-with-query": "^1.112.0",
     "@tanstack/router-devtools": "^1.109.2",
     "@tanstack/start": "^1.109.2",
+    "@tanstack/zod-adapter": "^1.112.15",
     "@types/pg": "^8.11.11",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

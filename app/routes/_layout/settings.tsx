@@ -27,8 +27,8 @@ export function SettingsMenu({
   const viewport = isMobile ? 'mobile' : 'desktop'
   const linkDestinations = {
     desktop: {
-      appearance: '?setting=appearance',
-      font: '?setting=font',
+      appearance: '/playground/appearance',
+      font: '/playground/font',
     },
     mobile: {
       appearance: '/settings/appearance',

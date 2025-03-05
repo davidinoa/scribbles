@@ -62,6 +62,9 @@ importers:
       '@tanstack/start':
         specifier: ^1.109.2
         version: 1.109.2(@types/node@22.13.5)(db0@0.2.4(drizzle-orm@0.39.3(@types/pg@8.11.11)(pg@8.13.3)(postgres@3.4.5)))(drizzle-orm@0.39.3(@types/pg@8.11.11)(pg@8.13.3)(postgres@3.4.5))(ioredis@5.5.0)(jiti@2.4.2)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(terser@5.39.0)(tsx@4.19.3)(typescript@5.7.3)(vite@6.1.1(@types/node@22.13.5)(jiti@2.4.2)(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0))(yaml@2.7.0)
+      '@tanstack/zod-adapter':
+        specifier: ^1.112.15
+        version: 1.112.15(@tanstack/react-router@1.109.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(zod@3.24.2)
       '@types/pg':
         specifier: ^8.11.11
         version: 8.11.11
@@ -2190,6 +2193,13 @@ packages:
   '@tanstack/virtual-file-routes@1.99.0':
     resolution: {integrity: sha512-XvX8bfdo4CYiCW+ItVdBfCorh3PwQFqYqd7ll+XKWiWOJpqUGIG7VlziVavARZpUySiY2VBlHadiUYS7jhgjRg==}
     engines: {node: '>=12'}
+
+  '@tanstack/zod-adapter@1.112.15':
+    resolution: {integrity: sha512-HnMhW/VWM+XAubFBHV5ww0UZ2AUic73gZlXQweIrQXflq5lsgLhrwdRZXwRnifF7Be//O78bu6m3klrwc2dbSg==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      '@tanstack/react-router': '>=1.43.2'
+      zod: ^3.23.8
 
   '@types/babel__code-frame@7.0.6':
     resolution: {integrity: sha512-Anitqkl3+KrzcW2k77lRlg/GfLZLWXBuNgbEcIOU6M92yw42vsd3xV/Z/yAHEj8m+KUjL6bWOVOFqX8PFPJ4LA==}
@@ -6992,6 +7002,11 @@ snapshots:
   '@tanstack/store@0.7.0': {}
 
   '@tanstack/virtual-file-routes@1.99.0': {}
+
+  '@tanstack/zod-adapter@1.112.15(@tanstack/react-router@1.109.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(zod@3.24.2)':
+    dependencies:
+      '@tanstack/react-router': 1.109.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      zod: 3.24.2
 
   '@types/babel__code-frame@7.0.6': {}
 

@@ -8,11 +8,11 @@ export const Route = createFileRoute('/_layout/settings_/appearance')({
   component: AppearanceSettings,
 })
 
-function AppearanceSettings() {
+export function AppearanceSettings() {
   const { theme, setTheme } = useTheme()
 
   return (
-    <div className="container max-w-2xl py-6 mx-auto">
+    <div className="container mx-auto max-w-2xl py-6">
       <BackButton to="/settings" />
 
       <h2 className="mb-6 text-2xl font-semibold">Color Theme</h2>
