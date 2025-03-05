@@ -12,8 +12,8 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as SignInImport } from './routes/sign-in'
-import { Route as PlaygroundImport } from './routes/playground'
 import { Route as LayoutImport } from './routes/_layout'
+import { Route as PlaygroundIndexImport } from './routes/playground/index'
 import { Route as LayoutIndexImport } from './routes/_layout/index'
 import { Route as LayoutTagsImport } from './routes/_layout/tags'
 import { Route as LayoutSettingsImport } from './routes/_layout/settings'
@@ -33,14 +33,14 @@ const SignInRoute = SignInImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const PlaygroundRoute = PlaygroundImport.update({
-  id: '/playground',
-  path: '/playground',
+const LayoutRoute = LayoutImport.update({
+  id: '/_layout',
   getParentRoute: () => rootRoute,
 } as any)
 
-const LayoutRoute = LayoutImport.update({
-  id: '/_layout',
+const PlaygroundIndexRoute = PlaygroundIndexImport.update({
+  id: '/playground/',
+  path: '/playground/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -115,13 +115,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutImport
       parentRoute: typeof rootRoute
     }
-    '/playground': {
-      id: '/playground'
-      path: '/playground'
-      fullPath: '/playground'
-      preLoaderRoute: typeof PlaygroundImport
-      parentRoute: typeof rootRoute
-    }
     '/sign-in': {
       id: '/sign-in'
       path: '/sign-in'
@@ -163,6 +156,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof LayoutIndexImport
       parentRoute: typeof LayoutImport
+    }
+    '/playground/': {
+      id: '/playground/'
+      path: '/playground'
+      fullPath: '/playground'
+      preLoaderRoute: typeof PlaygroundIndexImport
+      parentRoute: typeof rootRoute
     }
     '/_layout/notes_/$noteId': {
       id: '/_layout/notes_/$noteId'
@@ -245,13 +245,13 @@ const LayoutRouteWithChildren =
 
 export interface FileRoutesByFullPath {
   '': typeof LayoutRouteWithChildren
-  '/playground': typeof PlaygroundRoute
   '/sign-in': typeof SignInRoute
   '/archive': typeof LayoutArchiveRoute
   '/notes': typeof LayoutNotesRouteWithChildren
   '/settings': typeof LayoutSettingsRoute
   '/tags': typeof LayoutTagsRoute
   '/': typeof LayoutIndexRoute
+  '/playground': typeof PlaygroundIndexRoute
   '/notes/$noteId': typeof LayoutNotesNoteIdRoute
   '/settings/appearance': typeof LayoutSettingsAppearanceRoute
   '/settings/font': typeof LayoutSettingsFontRoute
@@ -260,12 +260,12 @@ export interface FileRoutesByFullPath {
 }
 
 export interface FileRoutesByTo {
-  '/playground': typeof PlaygroundRoute
   '/sign-in': typeof SignInRoute
   '/archive': typeof LayoutArchiveRoute
   '/settings': typeof LayoutSettingsRoute
   '/tags': typeof LayoutTagsRoute
   '/': typeof LayoutIndexRoute
+  '/playground': typeof PlaygroundIndexRoute
   '/notes/$noteId': typeof LayoutNotesNoteIdRoute
   '/settings/appearance': typeof LayoutSettingsAppearanceRoute
   '/settings/font': typeof LayoutSettingsFontRoute
@@ -276,13 +276,13 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_layout': typeof LayoutRouteWithChildren
-  '/playground': typeof PlaygroundRoute
   '/sign-in': typeof SignInRoute
   '/_layout/archive': typeof LayoutArchiveRoute
   '/_layout/notes': typeof LayoutNotesRouteWithChildren
   '/_layout/settings': typeof LayoutSettingsRoute
   '/_layout/tags': typeof LayoutTagsRoute
   '/_layout/': typeof LayoutIndexRoute
+  '/playground/': typeof PlaygroundIndexRoute
   '/_layout/notes_/$noteId': typeof LayoutNotesNoteIdRoute
   '/_layout/settings_/appearance': typeof LayoutSettingsAppearanceRoute
   '/_layout/settings_/font': typeof LayoutSettingsFontRoute
@@ -294,13 +294,13 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | ''
-    | '/playground'
     | '/sign-in'
     | '/archive'
     | '/notes'
     | '/settings'
     | '/tags'
     | '/'
+    | '/playground'
     | '/notes/$noteId'
     | '/settings/appearance'
     | '/settings/font'
@@ -308,12 +308,12 @@ export interface FileRouteTypes {
     | '/notes/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/playground'
     | '/sign-in'
     | '/archive'
     | '/settings'
     | '/tags'
     | '/'
+    | '/playground'
     | '/notes/$noteId'
     | '/settings/appearance'
     | '/settings/font'
@@ -322,13 +322,13 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_layout'
-    | '/playground'
     | '/sign-in'
     | '/_layout/archive'
     | '/_layout/notes'
     | '/_layout/settings'
     | '/_layout/tags'
     | '/_layout/'
+    | '/playground/'
     | '/_layout/notes_/$noteId'
     | '/_layout/settings_/appearance'
     | '/_layout/settings_/font'
@@ -339,14 +339,14 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   LayoutRoute: typeof LayoutRouteWithChildren
-  PlaygroundRoute: typeof PlaygroundRoute
   SignInRoute: typeof SignInRoute
+  PlaygroundIndexRoute: typeof PlaygroundIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   LayoutRoute: LayoutRouteWithChildren,
-  PlaygroundRoute: PlaygroundRoute,
   SignInRoute: SignInRoute,
+  PlaygroundIndexRoute: PlaygroundIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -360,8 +360,8 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/_layout",
-        "/playground",
-        "/sign-in"
+        "/sign-in",
+        "/playground/"
       ]
     },
     "/_layout": {
@@ -377,9 +377,6 @@ export const routeTree = rootRoute
         "/_layout/settings_/font",
         "/_layout/tags_/$tagName"
       ]
-    },
-    "/playground": {
-      "filePath": "playground.tsx"
     },
     "/sign-in": {
       "filePath": "sign-in.tsx"
@@ -406,6 +403,9 @@ export const routeTree = rootRoute
     "/_layout/": {
       "filePath": "_layout/index.tsx",
       "parent": "/_layout"
+    },
+    "/playground/": {
+      "filePath": "playground/index.tsx"
     },
     "/_layout/notes_/$noteId": {
       "filePath": "_layout/notes_.$noteId.tsx",
