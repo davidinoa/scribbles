@@ -1,18 +1,12 @@
-import {
-  createFileRoute,
-  Outlet,
-  useLocation,
-  useParams,
-  useSearch,
-} from '@tanstack/react-router'
-import { SettingsMenu } from './_layout/settings'
+import { createFileRoute, Outlet, useLocation } from '@tanstack/react-router'
+import { fallback, zodValidator } from '@tanstack/zod-adapter'
+import { z } from 'zod'
 import {
   Sidebar,
   SidebarProvider,
   SidebarTrigger,
 } from '~/components/ui/sidebar'
-import { z } from 'zod'
-import { fallback, zodValidator } from '@tanstack/zod-adapter'
+import { SettingsMenu } from './_layout/settings'
 
 const playgroundSearchSchema = z.object({
   setting: fallback(z.enum(['appearance', 'font']), 'appearance'),
