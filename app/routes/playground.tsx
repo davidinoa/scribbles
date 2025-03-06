@@ -1,6 +1,4 @@
 import { createFileRoute, Outlet, useLocation } from '@tanstack/react-router'
-import { fallback, zodValidator } from '@tanstack/zod-adapter'
-import { z } from 'zod'
 import {
   Sidebar,
   SidebarProvider,
@@ -8,19 +6,15 @@ import {
 } from '~/components/ui/sidebar'
 import { SettingsMenu } from './_layout/settings'
 
-const playgroundSearchSchema = z.object({
-  setting: fallback(z.enum(['appearance', 'font']), 'appearance'),
-})
-
 export const Route = createFileRoute('/playground')({
   component: RouteComponent,
-  validateSearch: zodValidator(playgroundSearchSchema),
 })
 
 function RouteComponent() {
-  const location = useLocation()
-  const pathname = location.pathname
-  const selectedSetting = pathname.split('/').pop() as 'appearance' | 'font'
+  const selectedSetting = useLocation({
+    select: (location) =>
+      location.pathname.split('/').pop() as 'appearance' | 'font',
+  })
 
   return (
     <SidebarProvider>
