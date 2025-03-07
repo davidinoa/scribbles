@@ -1,20 +1,20 @@
+import { ClerkProvider } from '@clerk/tanstack-start'
+import { getAuth } from '@clerk/tanstack-start/server'
+import type { QueryClient } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import {
   HeadContent,
   Outlet,
   Scripts,
   createRootRouteWithContext,
 } from '@tanstack/react-router'
+import { createServerFn } from '@tanstack/start'
+import { getWebRequest } from '@tanstack/start/server'
 import { DefaultCatchBoundary } from '../components/default-catch-boundary'
 import { NotFound } from '../components/not-found'
+import { ThemeProvider } from '../contexts/theme-context'
 import appCss from '../styles/app.css?url'
 import { seo } from '../utils/seo'
-import { ClerkProvider } from '@clerk/tanstack-start'
-import { createServerFn } from '@tanstack/start'
-import { getAuth } from '@clerk/tanstack-start/server'
-import { getWebRequest } from '@tanstack/start/server'
-import { ThemeProvider } from '../contexts/theme-context'
-import type { QueryClient } from '@tanstack/react-query'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient
 }>()({
@@ -52,7 +52,6 @@ export const Route = createRootRouteWithContext<{
         href: '/favicon-16x16.png',
       },
       { rel: 'manifest', href: '/site.webmanifest', color: '#fffff' },
-      { rel: 'icon', href: '/favicon.ico' },
       {
         rel: 'preconnect',
         href: 'https://fonts.googleapis.com',
