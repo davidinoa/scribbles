@@ -1,4 +1,5 @@
-import { ChevronRight, Link, Sun, Type } from 'lucide-react'
+import { Link } from '@tanstack/react-router'
+import { ChevronRight, Sun, Type } from 'lucide-react'
 import { useIsMobile } from '~/hooks/use-mobile'
 import { cn } from '~/lib/utils'
 import { Button } from './ui/button'
