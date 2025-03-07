@@ -4,13 +4,13 @@ import {
   useLoaderData,
   useLocation,
 } from '@tanstack/react-router'
+import { SettingsMenu } from '~/components/settings-menu'
 import {
   Sidebar,
   SidebarContent,
   SidebarProvider,
   SidebarTrigger,
 } from '~/components/ui/sidebar'
-import { SettingsMenu } from './_layout/settings'
 
 export const Route = createFileRoute('/playground')({
   component: RouteComponent,
