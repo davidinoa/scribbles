@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { FontOptions } from '../_layout/settings_.font'
+import { FontOptions } from '~/components/font-options'
 
 export const Route = createFileRoute('/playground/font')({
   component: RouteComponent,
