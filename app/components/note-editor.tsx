@@ -29,6 +29,7 @@ import { deleteNote, updateNote } from '~/utils/notes'
 import { useToast } from '~/utils/toast-store'
 import { TagSelector } from './tag-selector'
 import { Label } from './ui/label'
+import { Skeleton } from './ui/skeleton'
 import { Textarea } from './ui/textarea'
 
 const defaultFormValues = {
@@ -60,7 +61,15 @@ export function NoteEditor({ initialValues, onSuccess }: NoteEditorProps = {}) {
     initialValues?.tags || [],
   )
 
+  // Track if date formatting is ready to prevent date formatting errors
+  const [isDateReady, setIsDateReady] = useState(false)
+
   const isEditing = !!initialValues?.id
+
+  // Ensure date handling is ready
+  useEffect(() => {
+    setIsDateReady(true)
+  }, [])
 
   const form = useForm({
     defaultValues: initialValues
@@ -306,11 +315,15 @@ export function NoteEditor({ initialValues, onSuccess }: NoteEditorProps = {}) {
           </div>
         </Label>
         <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-          <span>
-            {initialValues?.updatedAt
-              ? format(new Date(initialValues.updatedAt), 'PPP')
-              : 'Not yet saved'}
-          </span>
+          {!isDateReady && initialValues?.updatedAt ? (
+            <Skeleton className="h-4 w-32" />
+          ) : (
+            <span>
+              {initialValues?.updatedAt
+                ? format(new Date(initialValues.updatedAt), 'PPP')
+                : 'Not yet saved'}
+            </span>
+          )}
         </div>
       </div>
 

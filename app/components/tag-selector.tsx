@@ -1,5 +1,6 @@
+import { useQuery } from '@tanstack/react-query'
 import { Check, Plus, X } from 'lucide-react'
-import { cn } from '~/lib/utils'
+import { useCallback, useEffect, useState } from 'react'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
 import {
@@ -15,10 +16,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '~/components/ui/popover'
-import { useCallback, useState, useEffect } from 'react'
-import { fetchTagOptions } from '~/lib/server-fns/fetch-tag-options'
+import { Skeleton } from '~/components/ui/skeleton'
 import { createTag } from '~/lib/server-fns/create-tag'
-import { useQuery } from '@tanstack/react-query'
+import { fetchTagOptions } from '~/lib/server-fns/fetch-tag-options'
+import { cn } from '~/lib/utils'
 
 type TagSelectorProps = {
   placeholder?: string
@@ -52,6 +53,15 @@ export function TagSelector({
 
   const tags = tagsQuery.data ?? []
   const isLoading = tagsQuery.isLoading
+
+  // Check if we have all the label data for the selected tags
+  const hasAllTagLabels = selectedTags.every((tagId) =>
+    tags.some((tag) => tag.value === tagId),
+  )
+
+  // Only show skeleton if we don't have tag data yet
+  const showSkeleton =
+    isLoading || (selectedTags.length > 0 && !hasAllTagLabels)
 
   // Update selected tags when tags data is loaded
   useEffect(() => {
@@ -139,7 +149,12 @@ export function TagSelector({
             className="h-auto min-h-10 w-full justify-between border-none p-0 shadow-none hover:bg-transparent focus:bg-transparent active:bg-transparent"
           >
             <div className="flex flex-wrap gap-1 py-1">
-              {selectedTags.length > 0 ? (
+              {showSkeleton ? (
+                <div className="flex gap-1">
+                  <Skeleton className="h-6 w-20 rounded-full" />
+                  <Skeleton className="h-6 w-16 rounded-full" />
+                </div>
+              ) : selectedTags.length > 0 ? (
                 selectedTags.map((value) => {
                   const tag = tags.find((tag) => tag.value === value)
                   return (
@@ -148,7 +163,7 @@ export function TagSelector({
                       variant="secondary"
                       className="mb-1 mr-1"
                     >
-                      {tag?.label || value}
+                      {tag?.label}
                       <button
                         className="ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
                         onClick={(e) => {
@@ -178,8 +193,10 @@ export function TagSelector({
             />
             <CommandList>
               {isLoading ? (
-                <div className="py-6 text-center text-sm text-muted-foreground">
-                  Loading tags...
+                <div className="space-y-2 p-4">
+                  <Skeleton className="h-5 w-full" />
+                  <Skeleton className="h-5 w-4/5" />
+                  <Skeleton className="h-5 w-3/5" />
                 </div>
               ) : (
                 <>
