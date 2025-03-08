@@ -1,23 +1,15 @@
-import { formOptions, useForm, useStore } from '@tanstack/react-form'
+import { useForm, useStore } from '@tanstack/react-form'
 import { useRouter } from '@tanstack/react-router'
 import { useServerFn } from '@tanstack/start'
-import { cn } from '~/lib/utils'
-import { handleForm } from '~/lib/server-fns/handle-form'
-import { Button } from '~/components/ui/button'
-import { Textarea } from './ui/textarea'
+import { format } from 'date-fns'
 import {
-  LucideClock,
-  LucideTag,
-  LucideSave,
   Archive,
+  LucideClock,
+  LucideSave,
+  LucideTag,
   Trash2,
 } from 'lucide-react'
-import { TagSelector } from './tag-selector'
-import { Label } from './ui/label'
-import { updateNote, deleteNote } from '~/utils/notes'
-import { format } from 'date-fns'
 import { useEffect, useState } from 'react'
-import { archiveNote } from '~/lib/server-fns/archive-note'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,6 +21,15 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '~/components/ui/alert-dialog'
+import { Button } from '~/components/ui/button'
+import { archiveNote } from '~/lib/server-fns/archive-note'
+import { handleForm } from '~/lib/server-fns/handle-form'
+import { cn } from '~/lib/utils'
+import { deleteNote, updateNote } from '~/utils/notes'
+import { useToast } from '~/utils/toast-store'
+import { TagSelector } from './tag-selector'
+import { Label } from './ui/label'
+import { Textarea } from './ui/textarea'
 
 const defaultFormValues = {
   title: '',
@@ -53,6 +54,7 @@ export function NoteEditor({ initialValues, onSuccess }: NoteEditorProps = {}) {
   const deleteNoteFn = useServerFn(deleteNote)
   const archiveNoteFn = useServerFn(archiveNote)
   const router = useRouter()
+  const { success } = useToast()
 
   const [selectedTags, setSelectedTags] = useState<string[]>(
     initialValues?.tags || [],
@@ -87,6 +89,7 @@ export function NoteEditor({ initialValues, onSuccess }: NoteEditorProps = {}) {
           'noteId' in result
         ) {
           onSuccess(result.noteId as string)
+          success('Note updated')
         } else {
           router.navigate({ to: '/notes' })
         }

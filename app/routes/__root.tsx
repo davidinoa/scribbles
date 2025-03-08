@@ -10,6 +10,7 @@ import {
 } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/start'
 import { getWebRequest } from '@tanstack/start/server'
+import { Toaster } from '~/components/ui/sonner'
 import { DefaultCatchBoundary } from '../components/default-catch-boundary'
 import { NotFound } from '../components/not-found'
 import { ThemeProvider } from '../contexts/theme-context'
@@ -137,6 +138,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <ThemeProvider>{children}</ThemeProvider>
         <ReactQueryDevtools />
         <Scripts />
+        <Toaster />
       </body>
     </html>
   )
