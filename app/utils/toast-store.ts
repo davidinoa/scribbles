@@ -4,7 +4,7 @@ import { toast } from 'sonner'
 // 1. Create a toast service using TanStack Store
 // This is a thin wrapper around Sonner's API but allows us to
 // maintain the pattern and potentially add app-specific functionality
-const toastStore = new Store({
+export const toastStore = new Store({
   // We don't need to store toast state since Sonner handles that internally
   state: {},
   actions: {
