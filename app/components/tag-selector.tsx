@@ -1,6 +1,5 @@
-import { useQuery } from '@tanstack/react-query'
 import { Check, Plus, X } from 'lucide-react'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
 import {
@@ -17,8 +16,7 @@ import {
   PopoverTrigger,
 } from '~/components/ui/popover'
 import { Skeleton } from '~/components/ui/skeleton'
-import { createTag } from '~/lib/server-fns/create-tag'
-import { fetchTagOptions } from '~/lib/server-fns/fetch-tag-options'
+import { useTagSelector } from '~/lib/hooks/use-tag-selector'
 import { cn } from '~/lib/utils'
 
 type TagSelectorProps = {
@@ -35,93 +33,47 @@ export function TagSelector({
   initialSelectedTags = [],
 }: TagSelectorProps) {
   const [open, setOpen] = useState(false)
-  const [selectedTags, setSelectedTags] =
-    useState<string[]>(initialSelectedTags)
   const [inputValue, setInputValue] = useState('')
 
-  // Update selectedTags when initialSelectedTags changes
-  useEffect(() => {
-    if (initialSelectedTags.length > 0) {
-      setSelectedTags(initialSelectedTags)
-    }
-  }, [initialSelectedTags])
-
-  const tagsQuery = useQuery({
-    queryKey: ['tags'],
-    queryFn: fetchTagOptions,
+  const {
+    tags,
+    isLoading,
+    selectedTagIds,
+    createTag: handleCreateTagRequest,
+    toggleTag,
+    removeTag,
+  } = useTagSelector({
+    initialSelectedTagIds: initialSelectedTags,
+    onSelectedTagsChange: onChange,
   })
 
-  const tags = tagsQuery.data ?? []
-  const isLoading = tagsQuery.isLoading
-
   // Check if we have all the label data for the selected tags
-  const hasAllTagLabels = selectedTags.every((tagId) =>
+  const hasAllTagLabels = selectedTagIds.every((tagId) =>
     tags.some((tag) => tag.value === tagId),
   )
 
   // Only show skeleton if we don't have tag data yet
   const showSkeleton =
-    isLoading || (selectedTags.length > 0 && !hasAllTagLabels)
-
-  // Update selected tags when tags data is loaded
-  useEffect(() => {
-    if (!isLoading && tags.length > 0 && initialSelectedTags.length > 0) {
-      // Make sure all initialSelectedTags exist in the available tags
-      const validTags = initialSelectedTags.filter((tagId) =>
-        tags.some((tag) => tag.value === tagId),
-      )
-      if (validTags.length > 0) {
-        setSelectedTags(validTags)
-      }
-    }
-  }, [isLoading, tags, initialSelectedTags])
+    isLoading || (selectedTagIds.length > 0 && !hasAllTagLabels)
 
   const handleSelect = (value: string) => {
-    const newSelectedTags = selectedTags.includes(value)
-      ? selectedTags.filter((item) => item !== value)
-      : [...selectedTags, value]
-    setSelectedTags(newSelectedTags)
-    onChange?.(newSelectedTags)
+    toggleTag(value)
     setInputValue('')
   }
 
   const handleCreateTag = useCallback(async () => {
     if (!inputValue.trim()) return
-    try {
-      const exists = tags.some(
-        (tag) =>
-          tag.value.toLowerCase() === inputValue.toLowerCase() ||
-          tag.label.toLowerCase() === inputValue.toLowerCase(),
-      )
 
-      if (!exists) {
-        const newTag = await createTag({
-          data: { name: inputValue.trim() },
-        })
-
-        tagsQuery.refetch()
-        handleSelect(newTag.value)
-      } else {
-        const existingTag = tags.find(
-          (tag) =>
-            tag.label.toLowerCase() === inputValue.toLowerCase() ||
-            tag.value.toLowerCase() === inputValue.toLowerCase(),
-        )
-        if (existingTag) {
-          handleSelect(existingTag.value)
-        }
-      }
-    } catch (error) {
-      console.error('Error creating tag:', error)
+    const newTag = await handleCreateTagRequest(inputValue)
+    if (newTag) {
+      handleSelect(newTag.value)
     }
 
     setInputValue('')
-  }, [inputValue, tags, handleSelect])
+  }, [inputValue, handleCreateTagRequest, handleSelect])
 
   const handleRemoveTag = (value: string) => {
-    const newSelectedTags = selectedTags.filter((item) => item !== value)
-    setSelectedTags(newSelectedTags)
-    onChange?.(newSelectedTags)
+    removeTag(value)
   }
 
   const filteredTags = tags.filter(
@@ -154,8 +106,8 @@ export function TagSelector({
                   <Skeleton className="h-6 w-20 rounded-full" />
                   <Skeleton className="h-6 w-16 rounded-full" />
                 </div>
-              ) : selectedTags.length > 0 ? (
-                selectedTags.map((value) => {
+              ) : selectedTagIds.length > 0 ? (
+                selectedTagIds.map((value) => {
                   const tag = tags.find((tag) => tag.value === value)
                   return (
                     <Badge
@@ -212,7 +164,7 @@ export function TagSelector({
                         <Check
                           className={cn(
                             'ml-auto h-4 w-4',
-                            selectedTags.includes(tag.value)
+                            selectedTagIds.includes(tag.value)
                               ? 'opacity-100'
                               : 'opacity-0',
                           )}
