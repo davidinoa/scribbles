@@ -2,31 +2,16 @@ import { useForm, useStore } from '@tanstack/react-form'
 import { useRouter } from '@tanstack/react-router'
 import { useServerFn } from '@tanstack/start'
 import { format } from 'date-fns'
-import {
-  Archive,
-  LucideClock,
-  LucideSave,
-  LucideTag,
-  Trash2,
-} from 'lucide-react'
+import { LucideClock, LucideSave, LucideTag } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '~/components/ui/alert-dialog'
 import { Button } from '~/components/ui/button'
 import { archiveNote } from '~/lib/server-fns/archive-note'
 import { handleForm } from '~/lib/server-fns/handle-form'
 import { cn } from '~/lib/utils'
 import { deleteNote, updateNote } from '~/utils/notes'
 import { useToast } from '~/utils/toast-store'
+import { FormError } from './form-error'
+import { NoteActions } from './note-actions'
 import { TagSelector } from './tag-selector'
 import { Label } from './ui/label'
 import { Skeleton } from './ui/skeleton'
@@ -38,7 +23,7 @@ const defaultFormValues = {
   tags: [] as string[],
 }
 
-interface NoteEditorProps {
+type NoteEditorProps = {
   initialValues?: {
     id: string
     title: string
@@ -60,16 +45,7 @@ export function NoteEditor({ initialValues, onSuccess }: NoteEditorProps = {}) {
   const [selectedTags, setSelectedTags] = useState<string[]>(
     initialValues?.tags || [],
   )
-
-  // Track if date formatting is ready to prevent date formatting errors
-  const [isDateReady, setIsDateReady] = useState(false)
-
   const isEditing = !!initialValues?.id
-
-  // Ensure date handling is ready
-  useEffect(() => {
-    setIsDateReady(true)
-  }, [])
 
   const form = useForm({
     defaultValues: initialValues
@@ -166,54 +142,7 @@ export function NoteEditor({ initialValues, onSuccess }: NoteEditorProps = {}) {
       {/* Header section with save button */}
       <div className="mb-6 flex items-center justify-between">
         {isEditing && (
-          <div className="flex gap-2">
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="outline" className="gap-2" size="sm">
-                  <Archive className="h-4 w-4" />
-                  Archive
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Archive this note?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This note will be moved to your archives. You can restore it
-                    later.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleArchive}>
-                    Archive
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="destructive" className="gap-2" size="sm">
-                  <Trash2 className="h-4 w-4" />
-                  Delete
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete
-                    your note.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleDelete}>
-                    Delete
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </div>
+          <NoteActions onArchive={handleArchive} onDelete={handleDelete} />
         )}
         <div className={isEditing ? '' : 'ml-auto'}>
           <form.Subscribe
@@ -279,18 +208,7 @@ export function NoteEditor({ initialValues, onSuccess }: NoteEditorProps = {}) {
                 onChange={(e) => field.handleChange(e.target.value)}
                 placeholder="Enter a title..."
               />
-              {field.state.meta.errors.length > 0 && (
-                <div className="mt-1">
-                  {field.state.meta.errors.map((error) => (
-                    <p
-                      key={error}
-                      className="text-sm font-medium text-destructive"
-                    >
-                      {error}
-                    </p>
-                  ))}
-                </div>
-              )}
+              <FormError errors={field.state.meta.errors} className="mt-1" />
             </div>
           )
         }}
@@ -315,7 +233,7 @@ export function NoteEditor({ initialValues, onSuccess }: NoteEditorProps = {}) {
           </div>
         </Label>
         <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-          {!isDateReady && initialValues?.updatedAt ? (
+          {initialValues?.updatedAt ? (
             <Skeleton className="h-4 w-32" />
           ) : (
             <span>
@@ -351,18 +269,7 @@ export function NoteEditor({ initialValues, onSuccess }: NoteEditorProps = {}) {
                 onChange={(e) => field.handleChange(e.target.value)}
                 placeholder="Start typing your note here..."
               />
-              {field.state.meta.errors.length > 0 && (
-                <div className="mt-1">
-                  {field.state.meta.errors.map((error) => (
-                    <p
-                      key={error}
-                      className="text-sm font-medium text-destructive"
-                    >
-                      {error}
-                    </p>
-                  ))}
-                </div>
-              )}
+              <FormError errors={field.state.meta.errors} className="mt-1" />
             </div>
           )
         }}
