@@ -71,7 +71,13 @@ export function NoteEditor({ initialValues, onSuccess }: NoteEditorProps = {}) {
           'noteId' in result
         ) {
           onSuccess(result.noteId as string)
-          toast.success('Note updated')
+          toast.success('Note updated', {
+            closeButton: true,
+            classNames: {
+              content: 'text-ds-green-500',
+              icon: 'text-ds-green-500',
+            },
+          })
         } else {
           router.navigate({ to: '/notes' })
         }

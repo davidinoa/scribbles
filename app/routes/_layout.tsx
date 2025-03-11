@@ -1,8 +1,8 @@
-import { createFileRoute, Link, Outlet } from '@tanstack/react-router'
 import { UserButton } from '@clerk/tanstack-start'
-import { SidebarProvider } from '~/components/ui/sidebar'
+import { createFileRoute, Link, Outlet } from '@tanstack/react-router'
 import { AppSidebar } from '~/components/app-sidebar'
 import { NavToolbar } from '~/components/nav-toolbar'
+import { SidebarProvider } from '~/components/ui/sidebar'
 
 export const Route = createFileRoute('/_layout')({
   component: RouteComponent,
@@ -10,8 +10,8 @@ export const Route = createFileRoute('/_layout')({
 
 function RouteComponent() {
   return (
-    <div className="h-dvh grid grid-rows-[auto_1fr_3.5rem]">
-      <header className="bg-background-2 text-foreground p-4 text-lg font-bold border-b border-border grid grid-cols-[1fr_auto]">
+    <div className="grid h-dvh grid-rows-[auto_1fr_3.5rem]">
+      <header className="grid grid-cols-[1fr_auto] border-b border-border bg-background-2 p-4 text-lg font-bold text-foreground">
         <div className="flex items-center gap-4">
           <img src="/logo.svg" alt="Scribbles" className="size-8" />
           <Link to="/" className="pacifico-regular text-2xl">
@@ -20,9 +20,9 @@ function RouteComponent() {
         </div>
         <UserButton />
       </header>
-      <SidebarProvider defaultOpen={true}>
+      <SidebarProvider defaultOpen={true} className="max-sm:min-h-[unset]">
         <AppSidebar />
-        <main className="overflow-y-auto p-4 flex-1">
+        <main className="flex-1 overflow-y-auto p-4">
           <Outlet />
         </main>
       </SidebarProvider>
