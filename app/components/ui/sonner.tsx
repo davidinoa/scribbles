@@ -21,6 +21,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
             'group-[.toast]:bg-muted group-[.toast]:text-muted-foreground',
           success:
             'group-[.toaster]:border-ds-green-500 group-[.toaster]:bg-ds-green-100 group-[.toaster]:text-ds-green-500',
+          info: 'group-[.toaster]:border-ds-blue-500 group-[.toaster]:bg-ds-blue-100 group-[.toaster]:text-ds-blue-500',
         },
       }}
       {...props}

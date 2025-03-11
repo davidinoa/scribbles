@@ -3,13 +3,13 @@ import { useRouter } from '@tanstack/react-router'
 import { useServerFn } from '@tanstack/start'
 import { format } from 'date-fns'
 import { LucideClock, LucideSave, LucideTag } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { toast } from 'sonner'
 import { Button } from '~/components/ui/button'
 import { archiveNote } from '~/lib/server-fns/archive-note'
 import { handleForm } from '~/lib/server-fns/handle-form'
 import { cn } from '~/lib/utils'
 import { deleteNote, updateNote } from '~/utils/notes'
-import { useToast } from '~/utils/toast-store'
 import { FormError } from './form-error'
 import { NoteActions } from './note-actions'
 import { TagSelector } from './tag-selector'
@@ -28,7 +28,7 @@ type NoteEditorProps = {
     title: string
     content: string
     tags: string[]
-    updatedAt?: Date | string | null
+    updatedAt?: Date | string
   }
   onSuccess?: (noteId: string) => void
 }
@@ -39,7 +39,6 @@ export function NoteEditor({ initialValues, onSuccess }: NoteEditorProps = {}) {
   const deleteNoteFn = useServerFn(deleteNote)
   const archiveNoteFn = useServerFn(archiveNote)
   const router = useRouter()
-  const { success } = useToast()
 
   const [selectedTags, setSelectedTags] = useState<string[]>(
     initialValues?.tags || [],
@@ -59,7 +58,6 @@ export function NoteEditor({ initialValues, onSuccess }: NoteEditorProps = {}) {
       formData.append('title', data.value.title)
       formData.append('content', data.value.content)
       formData.append('tags', data.value.tags.join(','))
-
       if (isEditing && initialValues) {
         // Update existing note
         formData.append('noteId', initialValues.id)
@@ -73,14 +71,13 @@ export function NoteEditor({ initialValues, onSuccess }: NoteEditorProps = {}) {
           'noteId' in result
         ) {
           onSuccess(result.noteId as string)
-          success('Note updated')
+          toast.success('Note updated')
         } else {
           router.navigate({ to: '/notes' })
         }
       } else {
         // Create new note
         const result = await handleFormFn({ data: formData })
-
         if (
           typeof result === 'object' &&
           'success' in result &&
@@ -97,27 +94,15 @@ export function NoteEditor({ initialValues, onSuccess }: NoteEditorProps = {}) {
   })
   const formErrors = useStore(form.store, (formState) => formState.errors)
 
-  // Update the form's tags field when selectedTags changes
-  useEffect(() => {
-    form.setFieldValue('tags', selectedTags)
-  }, [selectedTags, form])
-
-  // Initialize form with tags when component mounts
-  useEffect(() => {
-    if (initialValues?.tags && initialValues.tags.length > 0) {
-      setSelectedTags(initialValues.tags)
-    }
-  }, [initialValues])
-
   const handleTagsChange = (tags: string[]) => {
     setSelectedTags(tags)
-    // Directly update the form value to ensure it's in sync
     form.setFieldValue('tags', tags)
   }
 
   const handleDelete = async () => {
     if (isEditing && initialValues) {
       await deleteNoteFn({ data: initialValues.id })
+      toast.info('Note deleted')
       router.navigate({ to: '/notes' })
     }
   }
@@ -125,6 +110,7 @@ export function NoteEditor({ initialValues, onSuccess }: NoteEditorProps = {}) {
   const handleArchive = async () => {
     if (isEditing && initialValues) {
       await archiveNoteFn({ data: initialValues.id })
+      toast.info('Note archived')
       router.navigate({ to: '/notes' })
     }
   }
@@ -168,7 +154,6 @@ export function NoteEditor({ initialValues, onSuccess }: NoteEditorProps = {}) {
           </form.Subscribe>
         </div>
       </div>
-
       {/* Error messages */}
       {formErrors.length > 0 && (
         <div className="mb-4">
