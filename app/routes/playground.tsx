@@ -11,7 +11,6 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '~/components/ui/sidebar'
-import { toastStore } from '~/utils/toast-store'
 
 export const Route = createFileRoute('/playground')({
   component: RouteComponent,
@@ -33,7 +32,6 @@ function RouteComponent() {
         <div className="grid h-full grid-cols-[auto_auto_1fr]">
           <Sidebar>
             <SidebarContent>{JSON.stringify(data)}</SidebarContent>
-            <SidebarContent>{toastStore.state}</SidebarContent>
           </Sidebar>
           <div className="flex flex-col border-r border-border p-8">
             <div className="flex-1">
