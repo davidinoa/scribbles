@@ -11,22 +11,30 @@ export const Route = createFileRoute('/_layout')({
 function RouteComponent() {
   return (
     <div className="grid h-dvh grid-rows-[auto_1fr_3.5rem]">
-      <header className="grid grid-cols-[1fr_auto] border-b border-border bg-background-2 p-4 text-lg font-bold text-foreground">
-        <div className="flex items-center gap-4">
-          <img src="/logo.svg" alt="Scribbles" className="size-8" />
-          <Link to="/" className="pacifico-regular text-2xl">
-            Scribbles
-          </Link>
-        </div>
-        <UserButton />
-      </header>
-      <SidebarProvider defaultOpen={true} className="max-sm:min-h-[unset]">
-        <AppSidebar />
-        <main className="flex-1 overflow-y-auto p-4">
-          <Outlet />
-        </main>
-      </SidebarProvider>
+      <AppHeader />
+      <div className="overflow-y-scroll">
+        <SidebarProvider defaultOpen={true} className="max-sm:min-h-[unset]">
+          <AppSidebar />
+          <main className="flex-1 p-4">
+            <Outlet />
+          </main>
+        </SidebarProvider>
+      </div>
       <NavToolbar />
     </div>
+  )
+}
+
+function AppHeader() {
+  return (
+    <header className="grid grid-cols-[1fr_auto] border-b border-border bg-background-2 p-4 text-lg font-bold text-foreground">
+      <div className="flex items-center gap-4">
+        <img src="/logo.svg" alt="Scribbles" className="size-8" />
+        <Link to="/" className="pacifico-regular text-2xl">
+          Scribbles
+        </Link>
+      </div>
+      <UserButton />
+    </header>
   )
 }
