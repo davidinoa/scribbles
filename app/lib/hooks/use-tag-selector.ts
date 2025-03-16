@@ -56,7 +56,7 @@ export function useTagSelector({
 
   // Fetch all available tags
   const tagsQuery = useQuery({
-    queryKey: ['tags'],
+    queryKey: ['tag-options'],
     queryFn: fetchTagOptions,
   })
 

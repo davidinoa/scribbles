@@ -1,10 +1,13 @@
-import { Archive, Book, Home, Settings, Tag } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
+import { Archive, Book, Home, LucideTag, Settings, Tag } from 'lucide-react'
+import { fetchTags } from '~/lib/server-fns/fetch-tags'
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -45,9 +48,14 @@ export function AppSidebar() {
     'data-active': 'true',
   }
 
+  const tagsQuery = useQuery({
+    queryKey: ['tags'],
+    queryFn: fetchTags,
+  })
+
   return (
     <Sidebar>
-      <SidebarHeader className="p-4 flex flex-col gap-2">
+      <SidebarHeader className="flex flex-col gap-2 p-4">
         <img src="/logo.svg" alt="Scribbles" className="size-8" />
       </SidebarHeader>
       <SidebarContent>
@@ -66,6 +74,25 @@ export function AppSidebar() {
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Tags</SidebarGroupLabel>
+          <SidebarMenu>
+            {tagsQuery.data?.map((tag) => (
+              <SidebarMenuItem key={tag.id}>
+                <SidebarMenuButton asChild>
+                  <Link
+                    to="/tags/$tagName"
+                    params={{ tagName: tag.name }}
+                    activeProps={activeLinkProps}
+                  >
+                    <LucideTag className="size-4" />
+                    <span>{tag.name}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
     </Sidebar>
