@@ -7,17 +7,14 @@ import { z } from 'zod'
 import { db } from '~/db'
 import { notes, notesToTags, tags } from '~/db/schema'
 
-const fetchNotesParamsSchema = z
-  .object({
-    statusFilter: z.enum(['active', 'archived']).optional().default('active'),
-    filterBy: z.string().optional(),
-  })
-  .optional()
-  .default({ statusFilter: 'active' })
+const fetchNoteParamsSchema = z.object({
+  noteId: z.string(),
+  statusFilter: z.enum(['active', 'archived']).optional().default('active'),
+})
 
 export const fetchNote = createServerFn({ method: 'GET' })
-  .validator((data: string) => data)
-  .handler(async ({ data: noteId }) => {
+  .validator(fetchNoteParamsSchema)
+  .handler(async ({ data: { noteId, statusFilter } }) => {
     console.info(`Fetching note with id ${noteId}...`)
     const { userId } = await getAuth(getWebRequest()!)
 
@@ -26,7 +23,11 @@ export const fetchNote = createServerFn({ method: 'GET' })
     }
 
     const note = await db.query.notes.findFirst({
-      where: and(eq(notes.id, noteId), eq(notes.userId, userId)),
+      where: and(
+        eq(notes.id, noteId),
+        eq(notes.userId, userId),
+        eq(notes.isArchived, statusFilter === 'archived'),
+      ),
       with: {
         notesToTags: {
           with: {
@@ -42,6 +43,14 @@ export const fetchNote = createServerFn({ method: 'GET' })
 
     return note
   })
+
+const fetchNotesParamsSchema = z
+  .object({
+    statusFilter: z.enum(['active', 'archived']).optional().default('active'),
+    filterBy: z.string().optional(),
+  })
+  .optional()
+  .default({ statusFilter: 'active' })
 
 export const fetchNotes = createServerFn({ method: 'GET' })
   .validator(fetchNotesParamsSchema)

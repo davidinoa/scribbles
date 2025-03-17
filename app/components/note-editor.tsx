@@ -8,6 +8,7 @@ import { toast } from 'sonner'
 import { Button } from '~/components/ui/button'
 import { archiveNote } from '~/lib/server-fns/archive-note'
 import { handleForm } from '~/lib/server-fns/handle-form'
+import { restoreNote } from '~/lib/server-fns/restore-note'
 import { cn } from '~/lib/utils'
 import { deleteNote, updateNote } from '~/utils/notes'
 import { FormError } from './form-error'
@@ -23,6 +24,7 @@ const defaultFormValues = {
 }
 
 type NoteEditorProps = {
+  isArchived?: boolean
   initialValues?: {
     id: string
     title: string
@@ -33,11 +35,16 @@ type NoteEditorProps = {
   onSuccess?: (noteId: string) => void
 }
 
-export function NoteEditor({ initialValues, onSuccess }: NoteEditorProps = {}) {
+export function NoteEditor({
+  initialValues,
+  onSuccess,
+  isArchived = false,
+}: NoteEditorProps) {
   const handleFormFn = useServerFn(handleForm)
   const updateNoteFn = useServerFn(updateNote)
   const deleteNoteFn = useServerFn(deleteNote)
   const archiveNoteFn = useServerFn(archiveNote)
+  const restoreNoteFn = useServerFn(restoreNote)
   const router = useRouter()
 
   const [selectedTags, setSelectedTags] = useState<string[]>(
@@ -117,6 +124,14 @@ export function NoteEditor({ initialValues, onSuccess }: NoteEditorProps = {}) {
     if (isEditing && initialValues) {
       await archiveNoteFn({ data: initialValues.id })
       toast.info('Note archived')
+      router.navigate({ to: '/archive' })
+    }
+  }
+
+  const handleRestore = async () => {
+    if (isEditing && initialValues) {
+      await restoreNoteFn({ data: { noteId: initialValues.id } })
+      toast.info('Note restored')
       router.navigate({ to: '/notes' })
     }
   }
@@ -133,7 +148,12 @@ export function NoteEditor({ initialValues, onSuccess }: NoteEditorProps = {}) {
       {/* Header section with save button */}
       <div className="mb-6 flex items-center justify-between">
         {isEditing && (
-          <NoteActions onArchive={handleArchive} onDelete={handleDelete} />
+          <NoteActions
+            onRestore={handleRestore}
+            onArchive={handleArchive}
+            onDelete={handleDelete}
+            isArchived={isArchived}
+          />
         )}
         <div className={isEditing ? '' : 'ml-auto'}>
           <form.Subscribe

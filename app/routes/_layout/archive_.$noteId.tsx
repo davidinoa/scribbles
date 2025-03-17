@@ -2,11 +2,11 @@ import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { NoteEditor } from '~/components/note-editor'
 import { fetchNote } from '~/utils/notes'
 
-export const Route = createFileRoute('/_layout/notes_/$noteId')({
+export const Route = createFileRoute('/_layout/archive_/$noteId')({
   component: RouteComponent,
   loader: async ({ params }) => {
     const note = await fetchNote({
-      data: { noteId: params.noteId, statusFilter: 'active' },
+      data: { noteId: params.noteId, statusFilter: 'archived' },
     })
     return {
       note,
@@ -27,7 +27,7 @@ function RouteComponent() {
   return (
     <div className="mx-auto max-w-3xl p-6">
       <NoteEditor
-        onSuccess={handleEditSuccess}
+        isArchived
         initialValues={{
           id: note.id,
           title: note.title,
@@ -35,6 +35,7 @@ function RouteComponent() {
           tags: tagIds,
           updatedAt: note.updatedAt || note.createdAt,
         }}
+        onSuccess={handleEditSuccess}
       />
     </div>
   )

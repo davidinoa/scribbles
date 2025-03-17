@@ -20,17 +20,17 @@ export function NoteCard({ note }: NoteCardProps) {
   return (
     <Link
       key={note.id}
-      to="/notes/$noteId"
+      to={note.isArchived ? '/archive/$noteId' : '/notes/$noteId'}
       params={{ noteId: note.id }}
       className={cn(
-        'block rounded-lg p-4 hover:shadow-lg transition-shadow',
+        'block rounded-lg p-4 transition-shadow hover:shadow-lg',
         note.isArchived
           ? 'border-2 border-dashed border-gray-400 dark:border-gray-600'
           : 'border border-solid border-border',
       )}
     >
-      <h2 className="text-lg font-semibold mb-2">{note.title}</h2>
-      <p className="text-gray-600 dark:text-gray-400 line-clamp-3">
+      <h2 className="mb-2 text-lg font-semibold">{note.title}</h2>
+      <p className="line-clamp-3 text-gray-600 dark:text-gray-400">
         {note.content}
       </p>
       <div className="mt-2 flex items-center justify-between text-sm">
@@ -38,7 +38,7 @@ export function NoteCard({ note }: NoteCardProps) {
           {note.notesToTags?.map((noteToTag) => (
             <span
               key={noteToTag.id}
-              className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 rounded-full text-xs"
+              className="rounded-full bg-gray-100 px-2 py-0.5 text-xs dark:bg-gray-800"
             >
               {noteToTag.tag.name}
             </span>

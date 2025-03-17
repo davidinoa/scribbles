@@ -26,6 +26,7 @@ import { Route as LayoutTagsTagNameImport } from './routes/_layout/tags_.$tagNam
 import { Route as LayoutSettingsFontImport } from './routes/_layout/settings_.font'
 import { Route as LayoutSettingsAppearanceImport } from './routes/_layout/settings_.appearance'
 import { Route as LayoutNotesNoteIdImport } from './routes/_layout/notes_.$noteId'
+import { Route as LayoutArchiveNoteIdImport } from './routes/_layout/archive_.$noteId'
 
 // Create/Update Routes
 
@@ -118,6 +119,12 @@ const LayoutNotesNoteIdRoute = LayoutNotesNoteIdImport.update({
   getParentRoute: () => LayoutRoute,
 } as any)
 
+const LayoutArchiveNoteIdRoute = LayoutArchiveNoteIdImport.update({
+  id: '/archive_/$noteId',
+  path: '/archive/$noteId',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -192,6 +199,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutIndexImport
       parentRoute: typeof LayoutImport
     }
+    '/_layout/archive_/$noteId': {
+      id: '/_layout/archive_/$noteId'
+      path: '/archive/$noteId'
+      fullPath: '/archive/$noteId'
+      preLoaderRoute: typeof LayoutArchiveNoteIdImport
+      parentRoute: typeof LayoutImport
+    }
     '/_layout/notes_/$noteId': {
       id: '/_layout/notes_/$noteId'
       path: '/notes/$noteId'
@@ -250,6 +264,7 @@ interface LayoutRouteChildren {
   LayoutSettingsRoute: typeof LayoutSettingsRoute
   LayoutTagsRoute: typeof LayoutTagsRoute
   LayoutIndexRoute: typeof LayoutIndexRoute
+  LayoutArchiveNoteIdRoute: typeof LayoutArchiveNoteIdRoute
   LayoutNotesNoteIdRoute: typeof LayoutNotesNoteIdRoute
   LayoutSettingsAppearanceRoute: typeof LayoutSettingsAppearanceRoute
   LayoutSettingsFontRoute: typeof LayoutSettingsFontRoute
@@ -262,6 +277,7 @@ const LayoutRouteChildren: LayoutRouteChildren = {
   LayoutSettingsRoute: LayoutSettingsRoute,
   LayoutTagsRoute: LayoutTagsRoute,
   LayoutIndexRoute: LayoutIndexRoute,
+  LayoutArchiveNoteIdRoute: LayoutArchiveNoteIdRoute,
   LayoutNotesNoteIdRoute: LayoutNotesNoteIdRoute,
   LayoutSettingsAppearanceRoute: LayoutSettingsAppearanceRoute,
   LayoutSettingsFontRoute: LayoutSettingsFontRoute,
@@ -296,6 +312,7 @@ export interface FileRoutesByFullPath {
   '/playground/appearance': typeof PlaygroundAppearanceRoute
   '/playground/font': typeof PlaygroundFontRoute
   '/': typeof LayoutIndexRoute
+  '/archive/$noteId': typeof LayoutArchiveNoteIdRoute
   '/notes/$noteId': typeof LayoutNotesNoteIdRoute
   '/settings/appearance': typeof LayoutSettingsAppearanceRoute
   '/settings/font': typeof LayoutSettingsFontRoute
@@ -312,6 +329,7 @@ export interface FileRoutesByTo {
   '/playground/appearance': typeof PlaygroundAppearanceRoute
   '/playground/font': typeof PlaygroundFontRoute
   '/': typeof LayoutIndexRoute
+  '/archive/$noteId': typeof LayoutArchiveNoteIdRoute
   '/notes/$noteId': typeof LayoutNotesNoteIdRoute
   '/settings/appearance': typeof LayoutSettingsAppearanceRoute
   '/settings/font': typeof LayoutSettingsFontRoute
@@ -331,6 +349,7 @@ export interface FileRoutesById {
   '/playground/appearance': typeof PlaygroundAppearanceRoute
   '/playground/font': typeof PlaygroundFontRoute
   '/_layout/': typeof LayoutIndexRoute
+  '/_layout/archive_/$noteId': typeof LayoutArchiveNoteIdRoute
   '/_layout/notes_/$noteId': typeof LayoutNotesNoteIdRoute
   '/_layout/settings_/appearance': typeof LayoutSettingsAppearanceRoute
   '/_layout/settings_/font': typeof LayoutSettingsFontRoute
@@ -351,6 +370,7 @@ export interface FileRouteTypes {
     | '/playground/appearance'
     | '/playground/font'
     | '/'
+    | '/archive/$noteId'
     | '/notes/$noteId'
     | '/settings/appearance'
     | '/settings/font'
@@ -366,6 +386,7 @@ export interface FileRouteTypes {
     | '/playground/appearance'
     | '/playground/font'
     | '/'
+    | '/archive/$noteId'
     | '/notes/$noteId'
     | '/settings/appearance'
     | '/settings/font'
@@ -383,6 +404,7 @@ export interface FileRouteTypes {
     | '/playground/appearance'
     | '/playground/font'
     | '/_layout/'
+    | '/_layout/archive_/$noteId'
     | '/_layout/notes_/$noteId'
     | '/_layout/settings_/appearance'
     | '/_layout/settings_/font'
@@ -426,6 +448,7 @@ export const routeTree = rootRoute
         "/_layout/settings",
         "/_layout/tags",
         "/_layout/",
+        "/_layout/archive_/$noteId",
         "/_layout/notes_/$noteId",
         "/_layout/settings_/appearance",
         "/_layout/settings_/font",
@@ -471,6 +494,10 @@ export const routeTree = rootRoute
     },
     "/_layout/": {
       "filePath": "_layout/index.tsx",
+      "parent": "/_layout"
+    },
+    "/_layout/archive_/$noteId": {
+      "filePath": "_layout/archive_.$noteId.tsx",
       "parent": "/_layout"
     },
     "/_layout/notes_/$noteId": {
