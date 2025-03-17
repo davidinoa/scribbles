@@ -7,15 +7,18 @@ import {
   Outlet,
   Scripts,
   createRootRouteWithContext,
+  retainSearchParams,
 } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/start'
 import { getWebRequest } from '@tanstack/start/server'
+import { z } from 'zod'
 import { Toaster } from '~/components/ui/sonner'
 import { DefaultCatchBoundary } from '../components/default-catch-boundary'
 import { NotFound } from '../components/not-found'
 import { ThemeProvider } from '../contexts/theme-context'
 import appCss from '../styles/app.css?url'
 import { seo } from '../utils/seo'
+
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient
 }>()({
@@ -81,6 +84,12 @@ export const Route = createRootRouteWithContext<{
         <DefaultCatchBoundary {...props} />
       </RootDocument>
     )
+  },
+  validateSearch: z.object({
+    filterBy: z.string().optional(),
+  }).parse,
+  search: {
+    middlewares: [retainSearchParams(['filterBy'])],
   },
   notFoundComponent: () => <NotFound />,
   component: RootComponent,

@@ -1,6 +1,14 @@
 import { useQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
-import { Archive, Book, Home, LucideTag, Settings, Tag } from 'lucide-react'
+import {
+  Archive,
+  Book,
+  Home,
+  LucideTag,
+  Settings,
+  Tag,
+  ToyBrick,
+} from 'lucide-react'
 import { fetchTags } from '~/lib/server-fns/fetch-tags'
 import {
   Sidebar,
@@ -39,6 +47,11 @@ const mainItems = [
     title: 'Settings',
     url: '/settings',
     icon: Settings,
+  },
+  {
+    title: 'Playground',
+    url: '/playground',
+    icon: ToyBrick,
   },
 ]
 

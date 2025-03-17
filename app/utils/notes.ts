@@ -1,11 +1,11 @@
+import { getAuth } from '@clerk/tanstack-start/server'
 import { notFound } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/start'
-import { getAuth } from '@clerk/tanstack-start/server'
 import { getWebRequest } from '@tanstack/start/server'
 import { and, eq } from 'drizzle-orm'
-import { db } from '~/db'
-import { notes, notesToTags } from '~/db/schema'
 import { z } from 'zod'
+import { db } from '~/db'
+import { notes, notesToTags, tags } from '~/db/schema'
 
 const fetchNotesParamsSchema = z
   .object({
@@ -16,7 +16,7 @@ const fetchNotesParamsSchema = z
   .default({ statusFilter: 'active' })
 
 export const fetchNote = createServerFn({ method: 'GET' })
-  .validator((d: string) => d)
+  .validator((data: string) => data)
   .handler(async ({ data: noteId }) => {
     console.info(`Fetching note with id ${noteId}...`)
     const { userId } = await getAuth(getWebRequest()!)
@@ -53,7 +53,7 @@ export const fetchNotes = createServerFn({ method: 'GET' })
     }
 
     return db.query.notes.findMany({
-      where: (notes, { and, eq, or, ilike }) =>
+      where: (notes, { and, eq, or, ilike, exists, sql }) =>
         filterBy
           ? and(
               eq(notes.isArchived, statusFilter === 'archived'),
@@ -61,6 +61,18 @@ export const fetchNotes = createServerFn({ method: 'GET' })
               or(
                 ilike(notes.title, `%${filterBy}%`),
                 ilike(notes.content, `%${filterBy}%`),
+                exists(
+                  db
+                    .select()
+                    .from(notesToTags)
+                    .innerJoin(tags, eq(notesToTags.tagId, tags.id))
+                    .where(
+                      and(
+                        eq(notesToTags.noteId, notes.id),
+                        ilike(tags.name, `%${filterBy}%`),
+                      ),
+                    ),
+                ),
               ),
             )
           : and(

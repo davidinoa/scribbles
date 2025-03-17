@@ -3,20 +3,16 @@ import {
   retainSearchParams,
   useNavigate,
 } from '@tanstack/react-router'
+import { useEffect, useState } from 'react'
 import { z } from 'zod'
+import { EmptyState } from '~/components/empty-state'
 import { NoteCard } from '~/components/note-card'
 import { Input } from '~/components/ui/input'
-import { EmptyState } from '~/components/empty-state'
 import { fetchNotes } from '~/utils/notes'
-import { useState, useEffect } from 'react'
 
 export const Route = createFileRoute('/_layout/notes')({
-  validateSearch: z.object({
-    filterBy: z.string().optional(),
-  }).parse,
-  search: {
-    middlewares: [retainSearchParams(['filterBy'])],
-  },
+  component: NotesPage,
+
   loaderDeps: ({ search }) => ({
     filterBy: search.filterBy,
   }),
@@ -26,14 +22,12 @@ export const Route = createFileRoute('/_layout/notes')({
       notes,
     }
   },
-
-  component: NotesPage,
 })
 
 function NotesPage() {
   const navigate = useNavigate({ from: Route.fullPath })
-  const search = Route.useSearch()
   const { notes } = Route.useLoaderData()
+  const search = Route.useSearch()
   const [filterDraft, setFilterDraft] = useState(search.filterBy ?? '')
 
   useEffect(() => {
@@ -52,7 +46,7 @@ function NotesPage() {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Notes</h1>
+      <h1 className="mb-4 text-2xl font-bold">Notes</h1>
       <Input
         type="search"
         placeholder="Search notes"
