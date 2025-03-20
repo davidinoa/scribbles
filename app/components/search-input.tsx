@@ -1,8 +1,18 @@
 import { useNavigate } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type InputHTMLAttributes } from 'react'
+import { cn } from '~/lib/utils'
 import { Input } from './ui/input'
 
-export function SearchInput({ search }: { search: string }) {
+type SearchInputProps = {
+  search: string
+  placeholder?: string
+} & InputHTMLAttributes<HTMLInputElement>
+
+export function SearchInput({
+  search,
+  placeholder = 'Search by title, content, or tags...',
+  ...props
+}: SearchInputProps) {
   const navigate = useNavigate({
     from: '/',
   })
@@ -26,8 +36,9 @@ export function SearchInput({ search }: { search: string }) {
   return (
     <Input
       type="search"
-      placeholder="Search by title, content, or tags..."
       value={searchDraft}
+      placeholder={placeholder}
+      className={cn(props.className)}
       onChange={(e) => setSearchDraft(e.target.value)}
     />
   )
