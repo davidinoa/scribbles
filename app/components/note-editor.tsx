@@ -146,7 +146,7 @@ export function NoteEditor({
       }}
     >
       {/* Header section with save button */}
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex w-full items-center justify-between gap-6">
         {isEditing && (
           <NoteActions
             onRestore={handleRestore}
@@ -155,7 +155,7 @@ export function NoteEditor({
             isArchived={isArchived}
           />
         )}
-        <div className={isEditing ? '' : 'ml-auto'}>
+        <div>
           <form.Subscribe
             selector={(formState) => [
               formState.canSubmit,

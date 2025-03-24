@@ -1,4 +1,6 @@
-import { Archive, Trash2 } from 'lucide-react'
+import { Link } from '@tanstack/react-router'
+import { Archive, ArrowLeft } from 'lucide-react'
+import { DeleteNoteDialog } from '~/features/notes/components/delete-dialog'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,8 +24,9 @@ export function ArchiveNoteDialog({ onAction }: NoteActionProps) {
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button variant="outline" className="gap-2" size="sm">
-          <Archive className="h-4 w-4" />
-          Archive
+          <Archive className="size-4" />
+          <span className="sr-only">Archive</span>
+          <span className="hidden md:block">Archive</span>
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
@@ -42,39 +45,14 @@ export function ArchiveNoteDialog({ onAction }: NoteActionProps) {
   )
 }
 
-export function DeleteNoteDialog({ onAction }: NoteActionProps) {
-  return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button variant="destructive" className="gap-2" size="sm">
-          <Trash2 className="h-4 w-4" />
-          Delete
-        </Button>
-      </AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete your
-            note.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={onAction}>Delete</AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-  )
-}
-
 export function RestoreNoteDialog({ onAction }: NoteActionProps) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button variant="outline" className="gap-2" size="sm">
-          <Archive className="h-4 w-4" />
-          Restore
+          <Archive className="size-4" />
+          <span className="sr-only">Restore</span>
+          <span className="hidden md:block">Restore</span>
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
@@ -92,25 +70,34 @@ export function RestoreNoteDialog({ onAction }: NoteActionProps) {
     </AlertDialog>
   )
 }
+
+type ActionCallback = () => Promise<void>
+
 export function NoteActions({
   onArchive,
   onDelete,
   isArchived,
   onRestore,
 }: {
-  onRestore: () => Promise<void>
-  onArchive: () => Promise<void>
-  onDelete: () => Promise<void>
+  onRestore: ActionCallback
+  onArchive: ActionCallback
+  onDelete: ActionCallback
   isArchived: boolean
 }) {
   return (
-    <div className="flex gap-2">
-      {isArchived ? (
-        <RestoreNoteDialog onAction={onRestore} />
-      ) : (
-        <ArchiveNoteDialog onAction={onArchive} />
-      )}
-      <DeleteNoteDialog onAction={onDelete} />
+    <div className="flex flex-1 items-center justify-between gap-4">
+      <Link to="/notes" className="flex items-center gap-2">
+        <ArrowLeft className="size-4" />
+        Go back
+      </Link>
+      <div className="flex gap-2">
+        {isArchived ? (
+          <RestoreNoteDialog onAction={onRestore} />
+        ) : (
+          <ArchiveNoteDialog onAction={onArchive} />
+        )}
+        <DeleteNoteDialog onAction={onDelete} />
+      </div>
     </div>
   )
 }

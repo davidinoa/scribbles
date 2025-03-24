@@ -15,7 +15,7 @@ function RouteComponent() {
       <div className="overflow-y-scroll">
         <SidebarProvider defaultOpen={true} className="max-sm:min-h-[unset]">
           <AppSidebar />
-          <main className="flex-1 p-4">
+          <main className="w-screen flex-1 p-4 max-sm:px-1">
             <Outlet />
           </main>
         </SidebarProvider>
