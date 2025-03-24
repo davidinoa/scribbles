@@ -84,9 +84,10 @@ export function NoteActions({
   onDelete: ActionCallback
   isArchived: boolean
 }) {
+  const backDestination = isArchived ? '/archive' : '/notes'
   return (
     <div className="flex flex-1 items-center justify-between gap-4">
-      <Link to="/notes" className="flex items-center gap-2">
+      <Link to={backDestination} className="flex items-center gap-2">
         <ArrowLeft className="size-4" />
         Go back
       </Link>
