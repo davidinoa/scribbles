@@ -6,6 +6,7 @@ import {
   useLoaderData,
   useSearch,
 } from '@tanstack/react-router'
+import { PlusIcon } from 'lucide-react'
 import { z } from 'zod'
 import { SearchInput } from '~/components/search-input'
 import { Button } from '~/components/ui/button'
@@ -50,7 +51,8 @@ function RouteComponent() {
         <div className="flex h-screen flex-col">
           <PlaygroundHeader />
           <div className="grid grow grid-cols-[auto_1fr]">
-            <div className="flex h-full flex-col border-r border-border p-8">
+            <div className="flex h-full flex-col gap-2 border-r border-border p-8">
+              <CreateNoteButton />
               <ul className="flex-1">
                 {data.notes.map((note) => (
                   <li key={note.id}>
@@ -101,5 +103,16 @@ function PlaygroundHeader() {
       </h1>
       <SearchInput search={filterBy} className="max-w-sm" />
     </header>
+  )
+}
+
+function CreateNoteButton() {
+  return (
+    <Button asChild variant="primary">
+      <Link to="/playground">
+        <PlusIcon className="mr-2 size-4" />
+        Create New Note
+      </Link>
+    </Button>
   )
 }
