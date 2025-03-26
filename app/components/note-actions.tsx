@@ -87,7 +87,7 @@ export function NoteActions({
   const backDestination = isArchived ? '/archive' : '/notes'
   return (
     <div className="flex flex-1 items-center justify-between gap-4">
-      <Link to={backDestination} className="flex items-center gap-2">
+      <Link to={backDestination} className="flex items-center gap-2 md:hidden">
         <ArrowLeft className="size-4" />
         Go back
       </Link>
