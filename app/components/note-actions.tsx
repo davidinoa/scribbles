@@ -13,36 +13,11 @@ import {
   AlertDialogTrigger,
 } from './ui/alert-dialog'
 import { Button } from './ui/button'
+import { ArchiveNoteDialog } from '~/features/notes/components/archive-dialog'
 
 type NoteActionProps = {
   onAction: () => Promise<void>
   isArchived?: boolean
-}
-
-export function ArchiveNoteDialog({ onAction }: NoteActionProps) {
-  return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button variant="outline" className="gap-2" size="sm">
-          <Archive className="size-4" />
-          <span className="sr-only">Archive</span>
-          <span className="hidden md:block">Archive</span>
-        </Button>
-      </AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Archive this note?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This note will be moved to your archives. You can restore it later.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={onAction}>Archive</AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-  )
 }
 
 export function RestoreNoteDialog({ onAction }: NoteActionProps) {

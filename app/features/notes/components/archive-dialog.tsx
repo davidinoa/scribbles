@@ -1,4 +1,4 @@
-import { Trash2 } from 'lucide-react'
+import { Archive } from 'lucide-react'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,31 +12,30 @@ import {
 } from '~/components/ui/alert-dialog'
 import { Button } from '~/components/ui/button'
 
-type NoteActionProps = {
+type Props = {
   onAction: () => Promise<void>
 }
 
-export function DeleteNoteDialog({ onAction }: NoteActionProps) {
+export function ArchiveNoteDialog({ onAction }: Props) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button variant="outline" className="gap-2" size="sm">
-          <Trash2 className="size-4" />
-          <span className="sr-only">Delete</span>
-          <span className="hidden md:block">Delete</span>
+          <Archive className="size-4" />
+          <span className="sr-only">Archive</span>
+          <span className="hidden md:block">Archive</span>
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+          <AlertDialogTitle>Archive this note?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete your
-            note.
+            This note will be moved to your archives. You can restore it later.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={onAction}>Delete</AlertDialogAction>
+          <AlertDialogAction onClick={onAction}>Archive</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

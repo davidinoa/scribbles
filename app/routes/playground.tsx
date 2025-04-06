@@ -51,7 +51,7 @@ function RouteComponent() {
         <div className="flex h-screen flex-col">
           <PlaygroundHeader />
           <div className="grid grow grid-cols-[auto_1fr]">
-            <div className="flex h-full flex-col gap-2 border-r border-border p-8">
+            <div className="flex h-full max-w-72 flex-col gap-2 border-r border-border p-8">
               <CreateNoteButton />
               <ul className="flex-1">
                 {data.notes.map((note) => (

@@ -116,7 +116,7 @@ export function TagSelector({
                       className="mb-1 mr-1"
                     >
                       {tag?.label}
-                      <button
+                      <div
                         className="ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
                         onClick={(e) => {
                           e.stopPropagation()
@@ -124,7 +124,7 @@ export function TagSelector({
                         }}
                       >
                         <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
-                      </button>
+                      </div>
                     </Badge>
                   )
                 })

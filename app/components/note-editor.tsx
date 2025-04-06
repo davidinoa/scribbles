@@ -2,10 +2,12 @@ import { useForm, useStore } from '@tanstack/react-form'
 import { useRouter } from '@tanstack/react-router'
 import { useServerFn } from '@tanstack/start'
 import { format } from 'date-fns'
-import { LucideClock, LucidePlus, LucideSave, LucideTag } from 'lucide-react'
+import { LucideClock, LucideSave, LucideTag } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { Button } from '~/components/ui/button'
+import { ArchiveNoteDialog } from '~/features/notes/components/archive-dialog'
+import { DeleteNoteDialog } from '~/features/notes/components/delete-dialog'
 import { archiveNote } from '~/lib/server-fns/archive-note'
 import { handleForm } from '~/lib/server-fns/handle-form'
 import { restoreNote } from '~/lib/server-fns/restore-note'
@@ -109,6 +111,7 @@ export function NoteEditor({
       }
     },
   })
+  const noteId = initialValues?.id ?? ''
   const formErrors = useStore(form.store, (formState) => formState.errors)
 
   const handleTagsChange = (tags: string[]) => {
@@ -116,12 +119,10 @@ export function NoteEditor({
     form.setFieldValue('tags', tags)
   }
 
-  const handleDelete = async () => {
-    if ((isEditing || isArchived) && initialValues) {
-      await deleteNoteFn({ data: initialValues.id })
-      toast.info('Note deleted')
-      router.navigate({ to: '/notes' })
-    }
+  const handleDelete = async (noteId: string) => {
+    await deleteNoteFn({ data: noteId })
+    toast.info('Note deleted')
+    router.navigate({ to: '/notes' })
   }
 
   const handleArchive = async () => {
@@ -151,12 +152,12 @@ export function NoteEditor({
         }}
       >
         {/* Header section with save button */}
-        <div className="mb-6 flex w-full items-center justify-between gap-6">
+        <div className="mb-6 flex w-full items-center justify-between gap-6 md:hidden">
           {isEditing && (
             <NoteActions
               onRestore={handleRestore}
               onArchive={handleArchive}
-              onDelete={handleDelete}
+              onDelete={() => handleDelete(initialValues?.id || '')}
               isArchived={isArchived}
             />
           )}
@@ -286,20 +287,32 @@ export function NoteEditor({
           }}
         </form.Field>
       </form>
-      <NoteEditorSidebar isCreating={isCreating} />
+      <NoteEditorSidebar
+        isCreating={isCreating}
+        onDelete={() => handleDelete(noteId)}
+        onArchive={() => handleArchive()}
+      />
     </div>
   )
 }
 
-function NoteEditorSidebar({ isCreating }: { isCreating?: boolean }) {
+function NoteEditorSidebar({
+  isCreating,
+  onDelete,
+  onArchive,
+}: {
+  isCreating?: boolean
+  onDelete: () => Promise<void>
+  onArchive: () => Promise<void>
+}) {
+  const content = !isCreating ? (
+    <div className="grid gap-2">
+      <ArchiveNoteDialog onAction={onArchive} />
+      <DeleteNoteDialog onAction={onDelete} />
+    </div>
+  ) : null
+
   return (
-    <aside className="min-w-64 border-l border-border p-8">
-      {!isCreating ? (
-        <Button variant="outline" className="w-full">
-          <LucidePlus className="size-4" />
-          Add note
-        </Button>
-      ) : null}
-    </aside>
+    <aside className="min-w-64 border-l border-border p-8">{content}</aside>
   )
 }
