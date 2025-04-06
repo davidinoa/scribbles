@@ -63,7 +63,7 @@ function RouteComponent() {
                 ))}
               </ul>
             </div>
-            <div className="p-8 max-sm:hidden">
+            <div className="max-sm:hidden">
               <Outlet />
             </div>
           </div>

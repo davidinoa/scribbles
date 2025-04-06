@@ -19,6 +19,7 @@ function RouteComponent() {
   const tagIds = note.notesToTags?.map((noteToTag) => noteToTag.tag.id) || []
   return (
     <NoteEditor
+      mode="edit"
       initialValues={{
         id: note.id,
         title: note.title,

@@ -27,7 +27,7 @@ function RouteComponent() {
   return (
     <div className="mx-auto max-w-3xl p-6">
       <NoteEditor
-        isArchived
+        mode="archive"
         initialValues={{
           id: note.id,
           title: note.title,

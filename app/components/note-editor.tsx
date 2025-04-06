@@ -2,7 +2,7 @@ import { useForm, useStore } from '@tanstack/react-form'
 import { useRouter } from '@tanstack/react-router'
 import { useServerFn } from '@tanstack/start'
 import { format } from 'date-fns'
-import { LucideClock, LucideSave, LucideTag } from 'lucide-react'
+import { LucideClock, LucidePlus, LucideSave, LucideTag } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { Button } from '~/components/ui/button'
@@ -23,8 +23,10 @@ const defaultFormValues = {
   tags: [] as string[],
 }
 
+type NoteEditorMode = 'create' | 'edit' | 'archive'
+
 type NoteEditorProps = {
-  isArchived?: boolean
+  mode?: NoteEditorMode
   initialValues?: {
     id: string
     title: string
@@ -38,7 +40,7 @@ type NoteEditorProps = {
 export function NoteEditor({
   initialValues,
   onSuccess,
-  isArchived = false,
+  mode = 'create',
 }: NoteEditorProps) {
   const handleFormFn = useServerFn(handleForm)
   const updateNoteFn = useServerFn(updateNote)
@@ -50,7 +52,9 @@ export function NoteEditor({
   const [selectedTags, setSelectedTags] = useState<string[]>(
     initialValues?.tags || [],
   )
-  const isEditing = !!initialValues?.id
+  const isEditing = mode === 'edit'
+  const isArchived = mode === 'archive'
+  const isCreating = mode === 'create'
 
   const form = useForm({
     defaultValues: initialValues
@@ -113,7 +117,7 @@ export function NoteEditor({
   }
 
   const handleDelete = async () => {
-    if (isEditing && initialValues) {
+    if ((isEditing || isArchived) && initialValues) {
       await deleteNoteFn({ data: initialValues.id })
       toast.info('Note deleted')
       router.navigate({ to: '/notes' })
@@ -129,7 +133,7 @@ export function NoteEditor({
   }
 
   const handleRestore = async () => {
-    if (isEditing && initialValues) {
+    if (isArchived && initialValues) {
       await restoreNoteFn({ data: { noteId: initialValues.id } })
       toast.info('Note restored')
       router.navigate({ to: '/notes' })
@@ -137,149 +141,165 @@ export function NoteEditor({
   }
 
   return (
-    <form
-      className="flex flex-col"
-      onSubmit={(e) => {
-        e.preventDefault()
-        e.stopPropagation()
-        form.handleSubmit()
-      }}
-    >
-      {/* Header section with save button */}
-      <div className="mb-6 flex w-full items-center justify-between gap-6">
-        {isEditing && (
-          <NoteActions
-            onRestore={handleRestore}
-            onArchive={handleArchive}
-            onDelete={handleDelete}
-            isArchived={isArchived}
-          />
-        )}
-        <div>
-          <form.Subscribe
-            selector={(formState) => [
-              formState.canSubmit,
-              formState.isSubmitting,
-            ]}
-          >
-            {([canSubmit, isSubmitting]) => (
-              <Button
-                type="submit"
-                disabled={!canSubmit}
-                className={cn(
-                  'bg-accent text-accent-foreground shadow-sm transition-all hover:bg-accent/90',
-                  !canSubmit && 'opacity-50',
-                  'gap-2 rounded-full px-4',
-                )}
-                size="sm"
-              >
-                <LucideSave className="size-3.5" />
-                {isSubmitting ? 'Saving...' : 'Save'}
-              </Button>
-            )}
-          </form.Subscribe>
-        </div>
-      </div>
-      {/* Error messages */}
-      {formErrors.length > 0 && (
-        <div className="mb-4">
-          {formErrors.map((error) => (
-            <p
-              key={JSON.stringify(error)}
-              className="text-sm font-medium text-destructive"
+    <div className="grid h-full md:grid-cols-[1fr_auto]">
+      <form
+        className="flex flex-col p-8"
+        onSubmit={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          form.handleSubmit()
+        }}
+      >
+        {/* Header section with save button */}
+        <div className="mb-6 flex w-full items-center justify-between gap-6">
+          {isEditing && (
+            <NoteActions
+              onRestore={handleRestore}
+              onArchive={handleArchive}
+              onDelete={handleDelete}
+              isArchived={isArchived}
+            />
+          )}
+          <div>
+            <form.Subscribe
+              selector={(formState) => [
+                formState.canSubmit,
+                formState.isSubmitting,
+              ]}
             >
-              {JSON.stringify(error)}
-            </p>
-          ))}
-        </div>
-      )}
-
-      {/* Title field */}
-      <form.Field
-        name="title"
-        validators={{
-          onSubmit: ({ value }) =>
-            value.length < 3
-              ? 'Title must be at least 3 characters'
-              : undefined,
-        }}
-      >
-        {(field) => {
-          return (
-            <div className="mb-2">
-              <Textarea
-                id="title"
-                name="title"
-                className={cn(
-                  'resize-none border-none bg-transparent px-0 text-3xl font-bold text-foreground shadow-none [field-sizing:content] placeholder:text-muted-foreground/50 focus-visible:shadow-none focus-visible:ring-0 md:text-3xl',
-                  field.state.meta.errors.length > 0 && 'border-destructive',
-                )}
-                value={field.state.value}
-                onChange={(e) => field.handleChange(e.target.value)}
-                placeholder="Enter a title..."
-              />
-              <FormError errors={field.state.meta.errors} className="mt-1" />
-            </div>
-          )
-        }}
-      </form.Field>
-
-      <div className="mb-6 grid grid-cols-[auto_1fr] items-center gap-x-6 gap-y-4 text-muted-foreground">
-        {/* Tag selector */}
-        <Label htmlFor="tags" className="flex items-center gap-2">
-          <LucideTag className="size-4" />
-          Tags
-        </Label>
-        <TagSelector
-          onChange={handleTagsChange}
-          initialSelectedTags={selectedTags}
-        />
-
-        {/* Last edited timestamp */}
-        <Label htmlFor="last-edited" className="flex items-center gap-2">
-          <div className="flex w-fit items-center gap-2">
-            <LucideClock className="size-4" />
-            <p className="whitespace-nowrap">Last edited</p>
+              {([canSubmit, isSubmitting]) => (
+                <Button
+                  type="submit"
+                  disabled={!canSubmit}
+                  className={cn(
+                    'bg-accent text-accent-foreground shadow-sm transition-all hover:bg-accent/90',
+                    !canSubmit && 'opacity-50',
+                    'gap-2 rounded-full px-4',
+                  )}
+                  size="sm"
+                >
+                  <LucideSave className="size-3.5" />
+                  {isSubmitting ? 'Saving...' : 'Save'}
+                </Button>
+              )}
+            </form.Subscribe>
           </div>
-        </Label>
-        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-          <span>
-            {initialValues?.updatedAt
-              ? format(new Date(initialValues.updatedAt), 'PPP')
-              : 'Not yet saved'}
-          </span>
         </div>
-      </div>
+        {/* Error messages */}
+        {formErrors.length > 0 && (
+          <div className="mb-4">
+            {formErrors.map((error) => (
+              <p
+                key={JSON.stringify(error)}
+                className="text-sm font-medium text-destructive"
+              >
+                {JSON.stringify(error)}
+              </p>
+            ))}
+          </div>
+        )}
 
-      {/* Content field */}
-      <form.Field
-        name="content"
-        validators={{
-          onSubmit: ({ value }) =>
-            value.length < 3
-              ? 'Content must be at least 3 characters'
-              : undefined,
-        }}
-      >
-        {(field) => {
-          return (
-            <div>
-              <Textarea
-                id="content"
-                name="content"
-                className={cn(
-                  'w-full resize-none border-none bg-transparent p-0 text-foreground shadow-none [field-sizing:content] placeholder:text-muted-foreground/50 focus-visible:shadow-none focus-visible:ring-0',
-                  field.state.meta.errors.length > 0 && 'border-destructive',
-                )}
-                value={field.state.value}
-                onChange={(e) => field.handleChange(e.target.value)}
-                placeholder="Start typing your note here..."
-              />
-              <FormError errors={field.state.meta.errors} className="mt-1" />
+        {/* Title field */}
+        <form.Field
+          name="title"
+          validators={{
+            onSubmit: ({ value }) =>
+              value.length < 3
+                ? 'Title must be at least 3 characters'
+                : undefined,
+          }}
+        >
+          {(field) => {
+            return (
+              <div className="mb-2">
+                <Textarea
+                  id="title"
+                  name="title"
+                  className={cn(
+                    'resize-none border-none bg-transparent px-0 text-3xl font-bold text-foreground shadow-none [field-sizing:content] placeholder:text-muted-foreground/50 focus-visible:shadow-none focus-visible:ring-0 md:text-3xl',
+                    field.state.meta.errors.length > 0 && 'border-destructive',
+                  )}
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  placeholder="Enter a title..."
+                />
+                <FormError errors={field.state.meta.errors} className="mt-1" />
+              </div>
+            )
+          }}
+        </form.Field>
+
+        <div className="mb-6 grid grid-cols-[auto_1fr] items-center gap-x-6 gap-y-4 text-muted-foreground">
+          {/* Tag selector */}
+          <Label htmlFor="tags" className="flex items-center gap-2">
+            <LucideTag className="size-4" />
+            Tags
+          </Label>
+          <TagSelector
+            onChange={handleTagsChange}
+            initialSelectedTags={selectedTags}
+          />
+
+          {/* Last edited timestamp */}
+          <Label htmlFor="last-edited" className="flex items-center gap-2">
+            <div className="flex w-fit items-center gap-2">
+              <LucideClock className="size-4" />
+              <p className="whitespace-nowrap">Last edited</p>
             </div>
-          )
-        }}
-      </form.Field>
-    </form>
+          </Label>
+          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+            <span>
+              {initialValues?.updatedAt
+                ? format(new Date(initialValues.updatedAt), 'PPP')
+                : 'Not yet saved'}
+            </span>
+          </div>
+        </div>
+
+        {/* Content field */}
+        <form.Field
+          name="content"
+          validators={{
+            onSubmit: ({ value }) =>
+              value.length < 3
+                ? 'Content must be at least 3 characters'
+                : undefined,
+          }}
+        >
+          {(field) => {
+            return (
+              <div>
+                <Textarea
+                  id="content"
+                  name="content"
+                  className={cn(
+                    'w-full resize-none border-none bg-transparent p-0 text-foreground shadow-none [field-sizing:content] placeholder:text-muted-foreground/50 focus-visible:shadow-none focus-visible:ring-0',
+                    field.state.meta.errors.length > 0 && 'border-destructive',
+                  )}
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  placeholder="Start typing your note here..."
+                />
+                <FormError errors={field.state.meta.errors} className="mt-1" />
+              </div>
+            )
+          }}
+        </form.Field>
+      </form>
+      <NoteEditorSidebar isCreating={isCreating} />
+    </div>
+  )
+}
+
+function NoteEditorSidebar({ isCreating }: { isCreating?: boolean }) {
+  return (
+    <aside className="min-w-64 border-l border-border p-8">
+      {!isCreating ? (
+        <Button variant="outline" className="w-full">
+          <LucidePlus className="size-4" />
+          Add note
+        </Button>
+      ) : null}
+    </aside>
   )
 }
