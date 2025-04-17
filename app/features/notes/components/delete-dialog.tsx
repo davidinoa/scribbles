@@ -20,10 +20,10 @@ export function DeleteNoteDialog({ onAction }: NoteActionProps) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="outline" className="gap-2" size="sm">
+        <Button variant="outline" size="sm" className="flex justify-start">
           <Trash2 className="size-4" />
-          <span className="sr-only">Delete</span>
-          <span className="hidden md:block">Delete</span>
+          <span className="sr-only">Delete Note</span>
+          <span className="hidden md:block">Delete Note</span>
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>

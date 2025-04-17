@@ -13,29 +13,35 @@ import {
 import { Button } from '~/components/ui/button'
 
 type Props = {
-  onAction: () => Promise<void>
+  onAction: () => void
 }
 
 export function ArchiveNoteDialog({ onAction }: Props) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="outline" className="gap-2" size="sm">
+        <Button variant="outline" size="sm" className="flex justify-start">
           <Archive className="size-4" />
-          <span className="sr-only">Archive</span>
-          <span className="hidden md:block">Archive</span>
+          <span className="sr-only">Archive Note</span>
+          <span className="hidden md:block">Archive Note</span>
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Archive this note?</AlertDialogTitle>
+          <AlertDialogTitle>Archive Note</AlertDialogTitle>
           <AlertDialogDescription>
-            This note will be moved to your archives. You can restore it later.
+            <p>Are you sure you want to archive this note?</p>
+            <p>
+              You can find it in the Archived Notes section and restore it
+              anytime.
+            </p>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={onAction}>Archive</AlertDialogAction>
+          <AlertDialogAction onClick={onAction} variant="primary">
+            Archive
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
